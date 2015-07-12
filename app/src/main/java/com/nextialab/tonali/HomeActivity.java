@@ -2,15 +2,29 @@ package com.nextialab.tonali;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.nextialab.tonali.adapter.HomeAdapter;
+
 public class HomeActivity extends AppCompatActivity {
+
+    private String[] mData = {"List 1", "List 2", "List 3", "List 4", "List 5"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.home_toolbar);
+        setSupportActionBar(toolbar);
+        RecyclerView recycler = (RecyclerView) findViewById(R.id.home_recycler_view);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        recycler.setLayoutManager(layoutManager);
+        HomeAdapter adapter = new HomeAdapter(mData);
+        recycler.setAdapter(adapter);
     }
 
     @Override

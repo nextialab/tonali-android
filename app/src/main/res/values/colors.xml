@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="tonali_black">#FF000000</color>
+    <color name="tonali_gray">#FFCCCCCC</color>
+    <color name="tonali_white">#FFFFFFFF</color>
+</resources>
