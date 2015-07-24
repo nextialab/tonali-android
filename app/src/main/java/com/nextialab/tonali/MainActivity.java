@@ -2,17 +2,23 @@ package com.nextialab.tonali;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
-import com.nextialab.tonali.adapter.HomeAdapter;
+import com.nextialab.tonali.fragment.ListsFragment;
 
-public class HomeActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
-    private String[] mData = {"List 1", "List 2", "List 3", "List 4", "List 5"};
+    enum Section {
+        LISTS,
+        TASKS
+    }
+
+    private Section mCurrentSection = Section.LISTS;
+
+    private ListsFragment mListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,11 +26,8 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.home_toolbar);
         setSupportActionBar(toolbar);
-        RecyclerView recycler = (RecyclerView) findViewById(R.id.home_recycler_view);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        recycler.setLayoutManager(layoutManager);
-        HomeAdapter adapter = new HomeAdapter(mData);
-        recycler.setAdapter(adapter);
+        mListFragment = new ListsFragment();
+        getSupportFragmentManager().beginTransaction().add(R.id.main_container, mListFragment).commit();
     }
 
     @Override
@@ -48,4 +51,14 @@ public class HomeActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
+    public void onFloatingButton(View view) {
+        switch (mCurrentSection) {
+        case LISTS:
+            mListFragment.onNewList();
+            break;
+        }
+    }
+
 }
