@@ -3,21 +3,22 @@ package com.nextialab.tonali.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.Date;
-
 /**
  * Created by nigonzalez on 7/19/15.
  */
 public class List implements Parcelable {
 
     private int mId;
-    private String mList;
-    private Date mCreated;
-    private Date mModified;
+    private String mListName;
+
+    public List(String name, int id) {
+        mId = id;
+        mListName = name;
+    }
 
     protected List(Parcel in) {
         mId = in.readInt();
-        mList = in.readString();
+        mListName = in.readString();
     }
 
     public static final Creator<List> CREATOR = new Creator<List>() {
@@ -40,28 +41,12 @@ public class List implements Parcelable {
         mId = id;
     }
 
-    public String getList() {
-        return mList;
+    public String getListName() {
+        return mListName;
     }
 
-    public void setList(String list) {
-        mList = list;
-    }
-
-    public Date getCreated() {
-        return mCreated;
-    }
-
-    public void setCreated(Date created) {
-        mCreated = created;
-    }
-
-    public Date getModified() {
-        return mModified;
-    }
-
-    public void setModified(Date modified) {
-        mModified = modified;
+    public void setListName(String list) {
+        mListName = list;
     }
 
     @Override
@@ -72,6 +57,6 @@ public class List implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(mId);
-        dest.writeString(mList);
+        dest.writeString(mListName);
     }
 }

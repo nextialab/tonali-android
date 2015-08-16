@@ -1,15 +1,20 @@
 package com.nextialab.tonali;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.nextialab.tonali.fragment.ListsFragment;
+import com.nextialab.tonali.fragment.TasksFragment;
+import com.nextialab.tonali.model.List;
+import com.nextialab.tonali.support.ActivityListener;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ActivityListener {
 
     enum Section {
         LISTS,
@@ -18,7 +23,8 @@ public class MainActivity extends AppCompatActivity {
 
     private Section mCurrentSection = Section.LISTS;
 
-    private ListsFragment mListFragment;
+    private ListsFragment mListsFragment;
+    private TasksFragment mTasksFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,8 +32,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.home_toolbar);
         setSupportActionBar(toolbar);
-        mListFragment = new ListsFragment();
-        getSupportFragmentManager().beginTransaction().add(R.id.main_container, mListFragment).commit();
+        mListsFragment = new ListsFragment();
+        getSupportFragmentManager().beginTransaction().add(R.id.main_container, mListsFragment).commit();
     }
 
     @Override
@@ -52,13 +58,37 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        getSupportActionBar().setTitle(R.string.title_activity_home);
+        mCurrentSection = Section.LISTS;
+        super.onBackPressed();
+    }
 
     public void onFloatingButton(View view) {
         switch (mCurrentSection) {
         case LISTS:
-            mListFragment.onNewList();
+            mListsFragment.onNewList();
+            break;
+        case TASKS:
+            mTasksFragment.onNewTask();
             break;
         }
+    }
+
+    @Override
+    public void goToList(List list) {
+        Log.i("tonali", "Going to list with id " + list.getId());
+        Bundle data = new Bundle();
+        data.putParcelable(TasksFragment.LIST, list);
+        mTasksFragment = new TasksFragment();
+        mTasksFragment.setArguments(data);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right);
+        transaction.replace(R.id.main_container, mTasksFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+        mCurrentSection = Section.TASKS;
     }
 
 }

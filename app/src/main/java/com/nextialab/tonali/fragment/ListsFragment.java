@@ -16,7 +16,9 @@ import android.widget.EditText;
 
 import com.nextialab.tonali.R;
 import com.nextialab.tonali.adapter.ListsAdapter;
-import com.nextialab.tonali.support.TonaliPersistence;
+import com.nextialab.tonali.model.List;
+import com.nextialab.tonali.support.ActivityListener;
+import com.nextialab.tonali.support.Persistence;
 
 import java.util.ArrayList;
 
@@ -25,8 +27,9 @@ import java.util.ArrayList;
  */
 public class ListsFragment extends Fragment {
 
-    private ListsAdapter mAdapter = new ListsAdapter();
-    private TonaliPersistence mPersistance = null;
+    private ListsAdapter mAdapter = new ListsAdapter(this);
+    private Persistence mPersistence = null;
+    private ActivityListener mListener = null;
 
     public ListsFragment() {
 
@@ -35,7 +38,10 @@ public class ListsFragment extends Fragment {
     @Override
     public void onAttach (Activity activity) {
         super.onAttach(activity);
-        mPersistance = new TonaliPersistence(activity);
+        mPersistence = new Persistence(activity);
+        if (activity instanceof ActivityListener) {
+            mListener = (ActivityListener) activity;
+        }
     }
 
     @Override
@@ -50,15 +56,15 @@ public class ListsFragment extends Fragment {
     }
 
     private void loadLists() {
-        ArrayList<String> lists = mPersistance.getLists();
+        ArrayList<List> lists = mPersistence.getLists();
         mAdapter.setLists(lists);
     }
 
     private void onNewList(String listName) {
-        if (mPersistance.createList(listName)) {
+        if (mPersistence.createList(listName)) {
             loadLists();
         } else {
-            Log.i("tonali", "Could not create " + listName);
+            Log.e("tonali", "Could not create " + listName);
         }
     }
 
@@ -96,6 +102,10 @@ public class ListsFragment extends Fragment {
             }
         });
         dialog.show();
+    }
+
+    public void goToList(List list) {
+        if (mListener != null) mListener.goToList(list);
     }
 
 }

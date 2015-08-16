@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.nextialab.tonali.R;
+import com.nextialab.tonali.fragment.ListsFragment;
+import com.nextialab.tonali.model.List;
 
 import java.util.ArrayList;
 
@@ -15,29 +17,46 @@ import java.util.ArrayList;
  */
 public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.ViewHolder> {
 
-    private ArrayList<String> mLists = new ArrayList<>();
+    private ArrayList<List> mLists = new ArrayList<>();
+    private ListsFragment mListsFragment;
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public View mView;
+        private List mList;
+        private ListsFragment mListsFragment;
 
         public ViewHolder(View v) {
             super(v);
             mView = v;
+            mView.setOnClickListener(this);
+        }
+
+        public void setList(List list) {
+            mList = list;
+        }
+
+        public void setListsFragment(ListsFragment listsFragment) {
+            mListsFragment = listsFragment;
+        }
+
+        @Override
+        public void onClick(View view) {
+            mListsFragment.goToList(mList);
         }
 
     }
 
-    public ListsAdapter() {
-
+    public ListsAdapter(ListsFragment listsFragment) {
+        mListsFragment = listsFragment;
     }
 
-    public void setLists(ArrayList<String> data) {
+    public void setLists(ArrayList<List> data) {
         mLists = data;
         notifyDataSetChanged();
     }
 
-    public void pushLists(ArrayList<String> data) {
+    public void pushLists(ArrayList<List> data) {
         mLists.addAll(0, data);
         notifyDataSetChanged();
     }
@@ -51,7 +70,9 @@ public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        ((TextView) holder.mView.findViewById(R.id.list_name)).setText(mLists.get(position));
+        ((TextView) holder.mView.findViewById(R.id.list_name)).setText(mLists.get(position).getListName());
+        holder.setList(mLists.get(position));
+        holder.setListsFragment(mListsFragment);
     }
 
     @Override

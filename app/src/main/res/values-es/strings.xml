@@ -4,9 +4,12 @@
     <string name="action_settings">Configuraciones</string>
     <string name="lists_cancel_list">Cancelar</string>
     <string name="lists_create_list">Crear</string>
-    <string name="title_activity_home">Listas</string>
+    <string name="title_activity_home">Tonali</string>
     <string name="hello_world">Hola mundo!</string>
     <string name="lists_new_list">Nueva lista</string>
     <string name="lists_new_list_title">El nuevo nombre de tu lista</string>
     <string name="lists_new_list_error">El nombre de la lista no puede ser vacío</string>
+    <string name="tasks_new_task">Nueva tarea</string>
+    <string name="tasks_new_task_error">El nombre de la tarea no puede ser vacío</string>
+    <string name="tasks_new_task_title">El nuevo nombre de tu tarea</string>
 </resources>

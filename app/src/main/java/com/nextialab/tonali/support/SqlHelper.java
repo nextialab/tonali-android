@@ -24,6 +24,7 @@ public class SqlHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE " + LISTS_TABLE + " (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "list TEXT, " +
+                "cleared INTEGER, " +
                 "created INTEGER, " +
                 "modified INTEGER" +
                 ");");
@@ -31,7 +32,8 @@ public class SqlHelper extends SQLiteOpenHelper {
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "task TEXT, " +
                 "list INTEGER, " +
-                "completed INTEGER, " +
+                "done INTEGER, " +
+                "cleared INTEGER, " +
                 "created INTEGER, " +
                 "modified INTEGER" +
                 ");");

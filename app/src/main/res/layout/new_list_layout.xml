@@ -8,7 +8,7 @@
 
     <android.support.design.widget.TextInputLayout android:layout_width="match_parent"
                      android:layout_height="wrap_content"
-                                                   android:id="@+id/lists_input_new_list_wrapper">
+                     android:id="@+id/lists_input_new_list_wrapper">
 
         <EditText
             android:layout_width="match_parent"

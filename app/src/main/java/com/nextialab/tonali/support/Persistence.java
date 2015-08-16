@@ -13,18 +13,18 @@ import java.util.Date;
 /**
  * Created by nigonzalez on 7/19/15.
  */
-public class TonaliPersistence {
+public class Persistence {
 
     private Context mContext;
 
-    public TonaliPersistence(Context context) {
+    public Persistence(Context context) {
         mContext = context;
     }
 
-    public ArrayList<String> getLists() {
-        ArrayList<String> lists = new ArrayList<>();
+    public ArrayList<List> getLists() {
+        ArrayList<List> lists = new ArrayList<>();
         SQLiteDatabase db = new SqlHelper(mContext).getReadableDatabase();
-        String[] columns = {"list"};
+        String[] columns = {"list", "id"};
         Cursor cursor = db.query(SqlHelper.LISTS_TABLE,
                 columns,
                 null,
@@ -34,7 +34,9 @@ public class TonaliPersistence {
                 null,
                 null);
         while (cursor.moveToNext()) {
-            String list = cursor.getString(cursor.getColumnIndex("list"));
+            String listName = cursor.getString(cursor.getColumnIndex("list"));
+            int listId = cursor.getInt(cursor.getColumnIndex("id"));
+            List list = new List(listName, listId);
             lists.add(list);
         }
         cursor.close();
@@ -50,13 +52,13 @@ public class TonaliPersistence {
         args[0] = Integer.toString(list);
         Cursor cursor = db.query(SqlHelper.TASKS_TABLE,
                 columns,
-                "id",
+                "list=?",
                 args,
                 null,
                 null,
                 null);
         while (cursor.moveToNext()) {
-            String task = cursor.getString(cursor.getColumnIndex("list"));
+            String task = cursor.getString(cursor.getColumnIndex("task"));
             tasks.add(task);
         }
         cursor.close();
@@ -68,6 +70,8 @@ public class TonaliPersistence {
         Date today = new Date(0);
         ContentValues entry = new ContentValues();
         entry.put("list", name);
+        entry.put("type", 0);
+        entry.put("cleared", 0);
         entry.put("created", today.getTime());
         entry.put("modified", today.getTime());
         long id = db.insert(SqlHelper.LISTS_TABLE, null, entry);
@@ -84,7 +88,8 @@ public class TonaliPersistence {
         ContentValues entry = new ContentValues();
         entry.put("task", name);
         entry.put("list", list);
-        entry.put("completed", 0);
+        entry.put("done", 0);
+        entry.put("cleared", 0);
         entry.put("created", today.getTime());
         entry.put("modified", today.getTime());
         long id = db.insert(SqlHelper.TASKS_TABLE, null, entry);

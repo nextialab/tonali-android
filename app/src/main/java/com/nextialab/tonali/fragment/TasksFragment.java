@@ -1,17 +1,24 @@
 package com.nextialab.tonali.fragment;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.nextialab.tonali.R;
 import com.nextialab.tonali.adapter.TasksAdapter;
-import com.nextialab.tonali.support.TonaliPersistence;
+import com.nextialab.tonali.model.List;
+import com.nextialab.tonali.support.Persistence;
 
 import java.util.ArrayList;
 
@@ -20,12 +27,13 @@ import java.util.ArrayList;
  */
 public class TasksFragment extends Fragment {
 
-    private int mListId;
-    private String mListName;
+    public static final String LIST = "list";
 
-    private TasksAdapter mAdapter;
+    private List mList;
 
-    private TonaliPersistence mPersistance;
+    private TasksAdapter mAdapter = new TasksAdapter();
+
+    private Persistence mPersistence;
 
     public TasksFragment() {
 
@@ -34,13 +42,15 @@ public class TasksFragment extends Fragment {
     @Override
     public void onAttach (Activity activity) {
         super.onAttach(activity);
-        mPersistance = new TonaliPersistence(activity);
+        mPersistence = new Persistence(activity);
     }
 
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_tasks, container, false);
-
+        Bundle data = getArguments();
+        mList = data.getParcelable(LIST);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(mList.getListName());
         RecyclerView recycler = (RecyclerView) view.findViewById(R.id.tasks_recycler);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recycler.setLayoutManager(layoutManager);
@@ -50,8 +60,52 @@ public class TasksFragment extends Fragment {
     }
 
     private void loadTasks() {
-        ArrayList<String> lists = mPersistance.getTasksForList(mListId);
+        ArrayList<String> lists = mPersistence.getTasksForList(mList.getId());
         mAdapter.setLists(lists);
+    }
+
+    private void onNewTask(String taskName) {
+        if (mPersistence.createTask(taskName, mList.getId())) {
+            loadTasks();
+        } else {
+            Log.e("Tonali", "Could not create " + taskName);
+        }
+    }
+
+    public void onNewTask() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        View input = getActivity().getLayoutInflater().inflate(R.layout.new_task_layout, null);
+        final TextInputLayout editTextWrapper = (TextInputLayout) input.findViewById(R.id.lists_input_new_task_wrapper);
+        final EditText editText = (EditText) input.findViewById(R.id.lists_input_new_task);
+        builder.setTitle(R.string.tasks_new_task_title);
+        builder.setView(input);
+        builder.setPositiveButton(R.string.lists_create_list, null);
+        builder.setNegativeButton(R.string.lists_cancel_list, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        final AlertDialog dialog = builder.create();
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        editTextWrapper.setErrorEnabled(false);
+                        String taskName = editText.getText().toString();
+                        if (taskName.length() > 0) {
+                            onNewTask(taskName);
+                            dialog.dismiss();
+                        } else {
+                            editTextWrapper.setError(getString(R.string.tasks_new_task_error));
+                        }
+                    }
+                });
+            }
+        });
+        dialog.show();
     }
 
 }
