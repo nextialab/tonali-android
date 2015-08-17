@@ -100,4 +100,8 @@ public class Persistence {
         }
     }
 
+    public boolean updateTask() {
+        return true;
+    }
+
 }
