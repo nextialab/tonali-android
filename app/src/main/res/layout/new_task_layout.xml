@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/tasks_new_task_title"
+        android:id="@+id/textView2"
+        android:textSize="20sp"
+        android:layout_marginBottom="20dp" />
 
     <android.support.design.widget.TextInputLayout android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -14,4 +24,4 @@
 
     </android.support.design.widget.TextInputLayout>
 
-</RelativeLayout>
+</LinearLayout>

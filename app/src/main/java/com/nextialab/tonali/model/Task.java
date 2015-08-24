@@ -9,10 +9,7 @@ public class Task {
 
     private int mId;
     private String mTask;
-    private List mList;
-    private boolean mCompleted;
-    private Date mCreated;
-    private Date mModified;
+    private boolean mDone;
 
     public int getId() {
         return mId;
@@ -26,36 +23,16 @@ public class Task {
         return mTask;
     }
 
-    public List getList() {
-        return mList;
+    public void setTask(String task) {
+        mTask = task;
     }
 
-    public void setList(List list) {
-        mList = list;
+    public boolean isDone() {
+        return mDone;
     }
 
-    public boolean isCompleted() {
-        return mCompleted;
-    }
-
-    public void setCompleted(boolean completed) {
-        mCompleted = completed;
-    }
-
-    public Date getCreated() {
-        return mCreated;
-    }
-
-    public void setCreated(Date created) {
-        mCreated = created;
-    }
-
-    public Date getModified() {
-        return mModified;
-    }
-
-    public void setModified(Date modified) {
-        mModified = modified;
+    public void setDone(boolean done) {
+        mDone = done;
     }
 
 }

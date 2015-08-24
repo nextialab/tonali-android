@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.nextialab.tonali.model.List;
+import com.nextialab.tonali.model.Task;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,10 +45,10 @@ public class Persistence {
     }
 
 
-    public ArrayList<String> getTasksForList(int list) {
-        ArrayList<String> tasks = new ArrayList<>();
+    public ArrayList<Task> getTasksForList(int list) {
+        ArrayList<Task> tasks = new ArrayList<>();
         SQLiteDatabase db = new SqlHelper(mContext).getReadableDatabase();
-        String[] columns = {"task"};
+        String[] columns = {"id", "task", "done"};
         String[] args = new String[1];
         args[0] = Integer.toString(list);
         Cursor cursor = db.query(SqlHelper.TASKS_TABLE,
@@ -58,7 +59,13 @@ public class Persistence {
                 null,
                 null);
         while (cursor.moveToNext()) {
-            String task = cursor.getString(cursor.getColumnIndex("task"));
+            int id = cursor.getInt(cursor.getColumnIndex("id"));
+            String text = cursor.getString(cursor.getColumnIndex("task"));
+            int done = cursor.getInt(cursor.getColumnIndex("done"));
+            Task task = new Task();
+            task.setId(id);
+            task.setTask(text);
+            task.setDone(done != 0);
             tasks.add(task);
         }
         cursor.close();
@@ -67,7 +74,7 @@ public class Persistence {
 
     public boolean createList(String name) {
         SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
-        Date today = new Date(0);
+        Date today = new Date();
         ContentValues entry = new ContentValues();
         entry.put("list", name);
         entry.put("type", 0);
@@ -84,7 +91,7 @@ public class Persistence {
 
     public boolean createTask(String name, int list) {
         SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
-        Date today = new Date(0);
+        Date today = new Date();
         ContentValues entry = new ContentValues();
         entry.put("task", name);
         entry.put("list", list);
@@ -100,8 +107,20 @@ public class Persistence {
         }
     }
 
-    public boolean updateTask() {
-        return true;
+    public boolean setTaskDone(int task) {
+        SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
+        Date today = new Date();
+        ContentValues entry = new ContentValues();
+        entry.put("done", 1);
+        entry.put("modified", today.getTime());
+        String[] args = new String[1];
+        args[0] = Integer.toString(task);
+        int rows = db.update(SqlHelper.TASKS_TABLE, entry, "id=?", args);
+        if (rows > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

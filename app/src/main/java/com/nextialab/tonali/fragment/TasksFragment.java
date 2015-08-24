@@ -18,6 +18,7 @@ import android.widget.EditText;
 import com.nextialab.tonali.R;
 import com.nextialab.tonali.adapter.TasksAdapter;
 import com.nextialab.tonali.model.List;
+import com.nextialab.tonali.model.Task;
 import com.nextialab.tonali.support.Persistence;
 
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ public class TasksFragment extends Fragment {
     public void onAttach (Activity activity) {
         super.onAttach(activity);
         mPersistence = new Persistence(activity);
+        mAdapter.setPersistence(mPersistence);
     }
 
     @Override
@@ -60,7 +62,7 @@ public class TasksFragment extends Fragment {
     }
 
     private void loadTasks() {
-        ArrayList<String> lists = mPersistence.getTasksForList(mList.getId());
+        ArrayList<Task> lists = mPersistence.getTasksForList(mList.getId());
         mAdapter.setLists(lists);
     }
 
@@ -77,7 +79,6 @@ public class TasksFragment extends Fragment {
         View input = getActivity().getLayoutInflater().inflate(R.layout.new_task_layout, null);
         final TextInputLayout editTextWrapper = (TextInputLayout) input.findViewById(R.id.lists_input_new_task_wrapper);
         final EditText editText = (EditText) input.findViewById(R.id.lists_input_new_task);
-        builder.setTitle(R.string.tasks_new_task_title);
         builder.setView(input);
         builder.setPositiveButton(R.string.lists_create_list, null);
         builder.setNegativeButton(R.string.lists_cancel_list, new DialogInterface.OnClickListener() {

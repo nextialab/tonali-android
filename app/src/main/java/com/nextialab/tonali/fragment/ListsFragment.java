@@ -73,7 +73,6 @@ public class ListsFragment extends Fragment {
         View input = getActivity().getLayoutInflater().inflate(R.layout.new_list_layout, null);
         final TextInputLayout editTextWrapper = (TextInputLayout) input.findViewById(R.id.lists_input_new_list_wrapper);
         final EditText editText = (EditText) input.findViewById(R.id.lists_input_new_list);
-        builder.setTitle(R.string.lists_new_list_title);
         builder.setView(input);
         builder.setPositiveButton(R.string.lists_create_list, null);
         builder.setNegativeButton(R.string.lists_cancel_list, new DialogInterface.OnClickListener() {

@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.nextialab.tonali.R;
+import com.nextialab.tonali.model.Task;
+import com.nextialab.tonali.support.Persistence;
 
 import java.util.ArrayList;
 
@@ -21,12 +23,15 @@ import java.util.ArrayList;
  */
 public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> {
 
-    private ArrayList<String> mTasks = new ArrayList<>();
+    private ArrayList<Task> mTasks = new ArrayList<>();
+    private Persistence mPersistence;
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnTouchListener {
 
-        public View mView;
+        private View mView;
+        private int mTaskId;
         private GestureDetectorCompat mGestureDetectorCompat;
+        private Persistence mPersistence;
 
         class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
@@ -35,7 +40,6 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
 
             @Override
             public boolean onDown(MotionEvent e) {
-                Log.i("tonali", "going down on task");
                 return true;
             }
 
@@ -64,14 +68,17 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
 
             @Override
             public boolean onSingleTapConfirmed(MotionEvent e) {
-                Log.i("tonali", "Click on task");
                 return true;
             }
 
             private void onSwipeRight() {
-                Log.i("tonali", "Swipe right on task");
+                Log.i("TaskAdapter", "Doing task " + mTaskId);
                 TextView textView = (TextView) mView.findViewById(R.id.task_name);
-                textView.setPaintFlags(textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                if (mPersistence.setTaskDone(mTaskId)) {
+                    textView.setPaintFlags(textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                } else {
+                    Log.e("TaskAdapter", "Could not set task as done");
+                }
             }
 
             private void onSwipeLeft() {
@@ -80,11 +87,24 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
 
         }
 
-        public ViewHolder(Context context, View v) {
+        public ViewHolder(Context context, View v, Persistence persistence) {
             super(v);
+            mPersistence = persistence;
             mView = v;
             mGestureDetectorCompat = new GestureDetectorCompat(context, new GestureListener());
             mView.setOnTouchListener(this);
+        }
+
+        public void setTaskId(int taskId) {
+            mTaskId = taskId;
+        }
+
+        public View getView() {
+            return mView;
+        }
+
+        public void setView(View view) {
+            mView = view;
         }
 
         @Override
@@ -97,12 +117,16 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
 
     }
 
-    public void setLists(ArrayList<String> data) {
+    public void setPersistence(Persistence persistence) {
+        mPersistence = persistence;
+    }
+
+    public void setLists(ArrayList<Task> data) {
         mTasks = data;
         notifyDataSetChanged();
     }
 
-    public void pushLists(ArrayList<String> data) {
+    public void pushLists(ArrayList<Task> data) {
         mTasks.addAll(0, data);
         notifyDataSetChanged();
     }
@@ -110,13 +134,19 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_task, parent, false);
-        ViewHolder vh = new ViewHolder(parent.getContext(), view);
+        ViewHolder vh = new ViewHolder(parent.getContext(), view, mPersistence);
         return vh;
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        ((TextView) holder.mView.findViewById(R.id.task_name)).setText(mTasks.get(position));
+        Task task = mTasks.get(position);
+        holder.setTaskId(task.getId());
+        TextView view = (TextView) holder.getView().findViewById(R.id.task_name);
+        view.setText(task.getTask());
+        if (task.isDone()) {
+            view.setPaintFlags(view.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        }
     }
 
     @Override
