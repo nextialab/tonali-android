@@ -57,7 +57,7 @@ public class Persistence {
                 args,
                 null,
                 null,
-                null);
+                "created DESC");
         while (cursor.moveToNext()) {
             int id = cursor.getInt(cursor.getColumnIndex("id"));
             String text = cursor.getString(cursor.getColumnIndex("task"));

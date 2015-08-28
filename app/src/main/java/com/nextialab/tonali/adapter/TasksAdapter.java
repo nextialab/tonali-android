@@ -1,6 +1,7 @@
 package com.nextialab.tonali.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.widget.RecyclerView;
@@ -25,6 +26,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
 
     private ArrayList<Task> mTasks = new ArrayList<>();
     private Persistence mPersistence;
+    private Context mContext;
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnTouchListener {
 
@@ -76,6 +78,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
                 TextView textView = (TextView) mView.findViewById(R.id.task_name);
                 if (mPersistence.setTaskDone(mTaskId)) {
                     textView.setPaintFlags(textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                    textView.setTextColor(textView.getContext().getResources().getColor(R.color.tonali_gray));
                 } else {
                     Log.e("TaskAdapter", "Could not set task as done");
                 }
@@ -126,8 +129,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         notifyDataSetChanged();
     }
 
-    public void pushLists(ArrayList<Task> data) {
-        mTasks.addAll(0, data);
+    public void pushTask(Task task) {
+        mTasks.add(0, task);
         notifyDataSetChanged();
     }
 
@@ -146,6 +149,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         view.setText(task.getTask());
         if (task.isDone()) {
             view.setPaintFlags(view.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            view.setTextColor(view.getContext().getResources().getColor(R.color.tonali_gray));
         }
     }
 

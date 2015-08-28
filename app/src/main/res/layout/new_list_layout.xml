@@ -21,7 +21,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/lists_input_new_list"
-            android:hint="@string/lists_new_list" />
+            android:hint="@string/lists_new_list"
+            android:capitalize="sentences" />
 
     </android.support.design.widget.TextInputLayout>
 
