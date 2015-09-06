@@ -10,13 +10,20 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_home" >
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".AboutActivity"
+            android:label="@string/title_activity_about" >
+        </activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="810f485fc70b9ec7fe6791806fbc3f2b62f8545e" />
     </application>
 
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

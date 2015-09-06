@@ -1,5 +1,6 @@
 package com.nextialab.tonali;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -9,10 +10,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.crashlytics.android.Crashlytics;
 import com.nextialab.tonali.fragment.ListsFragment;
 import com.nextialab.tonali.fragment.TasksFragment;
 import com.nextialab.tonali.model.List;
 import com.nextialab.tonali.support.ActivityListener;
+import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity implements ActivityListener {
 
@@ -29,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.home_toolbar);
         setSupportActionBar(toolbar);
@@ -51,7 +55,8 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_about) {
+            startActivity(new Intent(this, AboutActivity.class));
             return true;
         }
 

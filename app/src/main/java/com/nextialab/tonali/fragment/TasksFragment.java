@@ -62,7 +62,7 @@ public class TasksFragment extends Fragment {
         return view;
     }
 
-    private void loadTasks() {
+    public void loadTasks() {
         ArrayList<Task> lists = mPersistence.getTasksForList(mList.getId());
         mAdapter.setLists(lists);
     }

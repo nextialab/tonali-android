@@ -13,4 +13,9 @@
     <string name="tasks_new_task_error">El nombre de la tarea no puede ser vacío</string>
     <string name="tasks_new_task_title">El nuevo nombre de tu tarea</string>
     <string name="tasks_update_task">Guardar</string>
+    <string name="app_clear">Limpiar</string>
+    <string name="title_activity_about">Acerca de</string>
+    <string name="about_tasks">Tareas</string>
+    <string name="about_swipe_right">Desliza a la derecha para marcar como completa/incompleta</string>
+    <string name="about_swipe_left">Deslizar a la izqeuirda para borrar una tarea</string>
 </resources>

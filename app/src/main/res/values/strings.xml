@@ -13,4 +13,11 @@
     <string name="tasks_new_task_error">Task name cannot be empty</string>
     <string name="tasks_new_task_title">Your productive new task</string>
     <string name="tasks_update_task">Update</string>
+    <string name="app_clear">Clear</string>
+    <string name="title_activity_about">About</string>
+    <string name="about_tasks">Tasks</string>
+    <string name="about_swipe_right">Swipe right to mark task as done/undone</string>
+    <string name="about_swipe_left">Swipe left to clear task</string>
+    <string name="about_developer" translatable="false">Nelson I. Gonzalez</string>
+    <string name="about_developer_email" translatable="false">nigm2005@gmail.com</string>
 </resources>

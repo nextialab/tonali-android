@@ -31,8 +31,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnTouchListener {
 
         private View mView;
-        private int mTaskId;
-        private String mTaskName;
+        private Task mTask;
         private GestureDetectorCompat mGestureDetectorCompat;
         private Persistence mPersistence;
         private TasksFragment mTasksFragment;
@@ -77,22 +76,24 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
 
             @Override
             public void onLongPress(MotionEvent e) {
-                mTasksFragment.onEditTask(mTaskId, mTaskName);
+                mTasksFragment.onEditTask(mTask.getId(), mTask.getTask());
             }
 
             private void onSwipeRight() {
-                Log.i("TaskAdapter", "Doing task " + mTaskId);
-                TextView textView = (TextView) mView.findViewById(R.id.task_name);
-                if (mPersistence.setTaskDone(mTaskId)) {
-                    textView.setPaintFlags(textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                    textView.setTextColor(textView.getContext().getResources().getColor(R.color.tonali_gray));
+                if (mPersistence.setTaskDone(mTask.getId(), !mTask.isDone())) {
+                    mTasksFragment.loadTasks();
                 } else {
                     Log.e("TaskAdapter", "Could not set task as done");
                 }
             }
 
             private void onSwipeLeft() {
-                Log.i("tonali", "Swipe left on task");
+                Log.i("TaskAdapter", "Swipe left");
+                if (mPersistence.setTaskCleared(mTask.getId())) {
+                    mTasksFragment.loadTasks();
+                } else {
+                    Log.e("TaskAdapter", "Could not clear task");
+                }
             }
 
         }
@@ -106,12 +107,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
             mView.setOnTouchListener(this);
         }
 
-        public void setTaskId(int taskId) {
-            mTaskId = taskId;
-        }
-
-        public void setTaskName(String taskName) {
-            mTaskName = taskName;
+        public void setTask(Task task) {
+            mTask = task;
         }
 
         public View getView() {
@@ -141,11 +138,6 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         notifyDataSetChanged();
     }
 
-    public void pushTask(Task task) {
-        mTasks.add(0, task);
-        notifyDataSetChanged();
-    }
-
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_task, parent, false);
@@ -156,8 +148,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Task task = mTasks.get(position);
-        holder.setTaskId(task.getId());
-        holder.setTaskName(task.getTask());
+        holder.setTask(task);
         TextView view = (TextView) holder.getView().findViewById(R.id.task_name);
         view.setText(task.getTask());
         if (task.isDone()) {

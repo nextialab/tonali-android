@@ -48,7 +48,7 @@ public class Persistence {
     public ArrayList<List> getListsWithCount() {
         ArrayList<List> lists = new ArrayList<>();
         SQLiteDatabase db = new SqlHelper(mContext).getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT l.id id, l.list list, COUNT(t.id) tasks FROM lists l LEFT JOIN tasks t ON l.id = t.list AND t.done = 0 GROUP BY l.id", null);
+        Cursor cursor = db.rawQuery("SELECT l.id id, l.list list, COUNT(t.id) tasks FROM lists l LEFT JOIN tasks t ON l.id = t.list AND t.done = 0 AND t.cleared = 0 GROUP BY l.id", null);
         while (cursor.moveToNext()) {
             int id = cursor.getInt(cursor.getColumnIndex("id"));
             String listName = cursor.getString(cursor.getColumnIndex("list"));
@@ -61,19 +61,21 @@ public class Persistence {
         return lists;
     }
 
+    // TODO: find a way to order by order and done in sqlite for Android
     public ArrayList<Task> getTasksForList(int list) {
         ArrayList<Task> tasks = new ArrayList<>();
+        ArrayList<Task> tasksDone = new ArrayList<>();
         SQLiteDatabase db = new SqlHelper(mContext).getReadableDatabase();
         String[] columns = {"id", "task", "done"};
         String[] args = new String[1];
         args[0] = Integer.toString(list);
         Cursor cursor = db.query(SqlHelper.TASKS_TABLE,
                 columns,
-                "list=?",
+                "list=? AND cleared=0",
                 args,
                 null,
                 null,
-                "created DESC, done ASC");
+                "created DESC");
         while (cursor.moveToNext()) {
             int id = cursor.getInt(cursor.getColumnIndex("id"));
             String text = cursor.getString(cursor.getColumnIndex("task"));
@@ -82,8 +84,13 @@ public class Persistence {
             task.setId(id);
             task.setTask(text);
             task.setDone(done != 0);
-            tasks.add(task);
+            if (task.isDone()) {
+                tasksDone.add(task);
+            } else {
+                tasks.add(task);
+            }
         }
+        tasks.addAll(tasksDone);
         cursor.close();
         return tasks;
     }
@@ -139,11 +146,45 @@ public class Persistence {
         }
     }
 
+    @Deprecated
     public boolean setTaskDone(int task) {
         SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
         Date today = new Date();
         ContentValues entry = new ContentValues();
         entry.put("done", 1);
+        entry.put("modified", today.getTime());
+        String[] args = new String[1];
+        args[0] = Integer.toString(task);
+        int rows = db.update(SqlHelper.TASKS_TABLE, entry, "id=?", args);
+        if (rows > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean setTaskDone(int task, boolean done) {
+        SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
+        Date today = new Date();
+        ContentValues entry = new ContentValues();
+        entry.put("done", done ? 1 : 0);
+        entry.put("modified", today.getTime());
+        String[] args = new String[1];
+        args[0] = Integer.toString(task);
+        int rows = db.update(SqlHelper.TASKS_TABLE, entry, "id=?", args);
+        if (rows > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean setTaskCleared(int task) {
+        SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
+        Date today = new Date();
+        ContentValues entry = new ContentValues();
+        entry.put("done", 1);
+        entry.put("cleared", 1);
         entry.put("modified", today.getTime());
         String[] args = new String[1];
         args[0] = Integer.toString(task);
