@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.EditText;
 
 import com.nextialab.tonali.R;
@@ -32,7 +33,7 @@ public class TasksFragment extends Fragment {
 
     private List mList;
 
-    private TasksAdapter mAdapter = new TasksAdapter();
+    private TasksAdapter mAdapter = new TasksAdapter(this);
 
     private Persistence mPersistence;
 
@@ -88,6 +89,14 @@ public class TasksFragment extends Fragment {
             }
         });
         final AlertDialog dialog = builder.create();
+        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                }
+            }
+        });
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialogInterface) {
@@ -98,6 +107,58 @@ public class TasksFragment extends Fragment {
                         String taskName = editText.getText().toString();
                         if (taskName.length() > 0) {
                             onNewTask(taskName);
+                            dialog.dismiss();
+                        } else {
+                            editTextWrapper.setError(getString(R.string.tasks_new_task_error));
+                        }
+                    }
+                });
+            }
+        });
+        dialog.show();
+    }
+
+    private void onUpdateTask(int task, String newName) {
+        if (mPersistence.updateTask(task, newName)) {
+            loadTasks();
+        } else {
+            Log.e("Tonali", "Could not update task " + task + " to " + newName);
+        }
+    }
+
+    public void onEditTask(final int task, String currentName) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        View input = getActivity().getLayoutInflater().inflate(R.layout.new_task_layout, null);
+        final TextInputLayout editTextWrapper = (TextInputLayout) input.findViewById(R.id.lists_input_new_task_wrapper);
+        final EditText editText = (EditText) input.findViewById(R.id.lists_input_new_task);
+        editText.setText(currentName);
+        editText.setSelection(currentName.length());
+        builder.setView(input);
+        builder.setPositiveButton(R.string.tasks_update_task, null);
+        builder.setNegativeButton(R.string.lists_cancel_list, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        final AlertDialog dialog = builder.create();
+        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                }
+            }
+        });dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        editTextWrapper.setErrorEnabled(false);
+                        String taskName = editText.getText().toString();
+                        if (taskName.length() > 0) {
+                            onUpdateTask(task, taskName);
                             dialog.dismiss();
                         } else {
                             editTextWrapper.setError(getString(R.string.tasks_new_task_error));

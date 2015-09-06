@@ -1,6 +1,7 @@
 package com.nextialab.tonali.fragment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
@@ -12,6 +13,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.nextialab.tonali.R;
@@ -56,7 +59,8 @@ public class ListsFragment extends Fragment {
     }
 
     private void loadLists() {
-        ArrayList<List> lists = mPersistence.getLists();
+        ArrayList<List> lists = mPersistence.getListsWithCount();
+        //ArrayList<List> lists = mPersistence.getLists();
         mAdapter.setLists(lists);
     }
 
@@ -82,6 +86,14 @@ public class ListsFragment extends Fragment {
             }
         });
         final AlertDialog dialog = builder.create();
+        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                }
+            }
+        });
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialogInterface) {

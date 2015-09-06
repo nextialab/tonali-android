@@ -10,6 +10,7 @@ public class List implements Parcelable {
 
     private int mId;
     private String mListName;
+    private int mTasks = 0;
 
     public List(String name, int id) {
         mId = id;
@@ -19,6 +20,7 @@ public class List implements Parcelable {
     protected List(Parcel in) {
         mId = in.readInt();
         mListName = in.readString();
+        mTasks = in.readInt();
     }
 
     public static final Creator<List> CREATOR = new Creator<List>() {
@@ -49,6 +51,14 @@ public class List implements Parcelable {
         mListName = list;
     }
 
+    public int getTasksCount() {
+        return mTasks;
+    }
+
+    public void setTasksCounter(int tasks) {
+        mTasks = tasks;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -58,5 +68,6 @@ public class List implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(mId);
         dest.writeString(mListName);
+        dest.writeInt(mTasks);
     }
 }

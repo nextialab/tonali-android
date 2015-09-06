@@ -75,6 +75,7 @@ public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         ((TextView) holder.mView.findViewById(R.id.list_name)).setText(mLists.get(position).getListName());
+        ((TextView) holder.mView.findViewById(R.id.list_tasks_counter)).setText(Integer.toString(mLists.get(position).getTasksCount()));
         holder.setList(mLists.get(position));
         holder.setListsFragment(mListsFragment);
     }

@@ -1,7 +1,6 @@
 package com.nextialab.tonali.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.nextialab.tonali.R;
+import com.nextialab.tonali.fragment.TasksFragment;
 import com.nextialab.tonali.model.Task;
 import com.nextialab.tonali.support.Persistence;
 
@@ -26,14 +26,16 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
 
     private ArrayList<Task> mTasks = new ArrayList<>();
     private Persistence mPersistence;
-    private Context mContext;
+    private TasksFragment mTasksFragment;
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnTouchListener {
 
         private View mView;
         private int mTaskId;
+        private String mTaskName;
         private GestureDetectorCompat mGestureDetectorCompat;
         private Persistence mPersistence;
+        private TasksFragment mTasksFragment;
 
         class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
@@ -73,6 +75,11 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
                 return true;
             }
 
+            @Override
+            public void onLongPress(MotionEvent e) {
+                mTasksFragment.onEditTask(mTaskId, mTaskName);
+            }
+
             private void onSwipeRight() {
                 Log.i("TaskAdapter", "Doing task " + mTaskId);
                 TextView textView = (TextView) mView.findViewById(R.id.task_name);
@@ -90,8 +97,9 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
 
         }
 
-        public ViewHolder(Context context, View v, Persistence persistence) {
+        public ViewHolder(Context context, View v, TasksFragment tasksFragment, Persistence persistence) {
             super(v);
+            mTasksFragment = tasksFragment;
             mPersistence = persistence;
             mView = v;
             mGestureDetectorCompat = new GestureDetectorCompat(context, new GestureListener());
@@ -100,6 +108,10 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
 
         public void setTaskId(int taskId) {
             mTaskId = taskId;
+        }
+
+        public void setTaskName(String taskName) {
+            mTaskName = taskName;
         }
 
         public View getView() {
@@ -116,8 +128,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         }
     }
 
-    public TasksAdapter() {
-
+    public TasksAdapter(TasksFragment tasksFragment) {
+        mTasksFragment = tasksFragment;
     }
 
     public void setPersistence(Persistence persistence) {
@@ -137,7 +149,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_task, parent, false);
-        ViewHolder vh = new ViewHolder(parent.getContext(), view, mPersistence);
+        ViewHolder vh = new ViewHolder(parent.getContext(), view, mTasksFragment, mPersistence);
         return vh;
     }
 
@@ -145,11 +157,15 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
     public void onBindViewHolder(ViewHolder holder, int position) {
         Task task = mTasks.get(position);
         holder.setTaskId(task.getId());
+        holder.setTaskName(task.getTask());
         TextView view = (TextView) holder.getView().findViewById(R.id.task_name);
         view.setText(task.getTask());
         if (task.isDone()) {
             view.setPaintFlags(view.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             view.setTextColor(view.getContext().getResources().getColor(R.color.tonali_gray));
+        } else {
+            view.setPaintFlags(view.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+            view.setTextColor(view.getContext().getResources().getColor(R.color.tonali_black));
         }
     }
 

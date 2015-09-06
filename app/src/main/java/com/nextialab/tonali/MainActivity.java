@@ -78,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
 
     @Override
     public void goToList(List list) {
-        Log.i("tonali", "Going to list with id " + list.getId());
         Bundle data = new Bundle();
         data.putParcelable(TasksFragment.LIST, list);
         mTasksFragment = new TasksFragment();

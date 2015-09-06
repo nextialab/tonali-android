@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.nextialab.tonali.model.List;
 import com.nextialab.tonali.model.Task;
@@ -44,6 +45,21 @@ public class Persistence {
         return lists;
     }
 
+    public ArrayList<List> getListsWithCount() {
+        ArrayList<List> lists = new ArrayList<>();
+        SQLiteDatabase db = new SqlHelper(mContext).getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT l.id id, l.list list, COUNT(t.id) tasks FROM lists l LEFT JOIN tasks t ON l.id = t.list AND t.done = 0 GROUP BY l.id", null);
+        while (cursor.moveToNext()) {
+            int id = cursor.getInt(cursor.getColumnIndex("id"));
+            String listName = cursor.getString(cursor.getColumnIndex("list"));
+            int tasks = cursor.getInt(cursor.getColumnIndex("tasks"));
+            List list = new List(listName, id);
+            list.setTasksCounter(tasks);
+            lists.add(list);
+        }
+        cursor.close();
+        return lists;
+    }
 
     public ArrayList<Task> getTasksForList(int list) {
         ArrayList<Task> tasks = new ArrayList<>();
@@ -57,7 +73,7 @@ public class Persistence {
                 args,
                 null,
                 null,
-                "created DESC");
+                "created DESC, done ASC");
         while (cursor.moveToNext()) {
             int id = cursor.getInt(cursor.getColumnIndex("id"));
             String text = cursor.getString(cursor.getColumnIndex("task"));
@@ -104,6 +120,22 @@ public class Persistence {
             return false;
         } else {
             return true;
+        }
+    }
+
+    public boolean updateTask(int task, String name) {
+        SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
+        Date today = new Date();
+        ContentValues entry = new ContentValues();
+        entry.put("task", name);
+        entry.put("modified", today.getTime());
+        String[] args = new String[1];
+        args[0] = Integer.toString(task);
+        int rows = db.update(SqlHelper.TASKS_TABLE, entry, "id=?", args);
+        if (rows > 0) {
+            return true;
+        } else {
+            return false;
         }
     }
 

@@ -12,4 +12,5 @@
     <string name="tasks_new_task">New task</string>
     <string name="tasks_new_task_error">Task name cannot be empty</string>
     <string name="tasks_new_task_title">Your productive new task</string>
+    <string name="tasks_update_task">Update</string>
 </resources>
