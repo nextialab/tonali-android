@@ -68,10 +68,16 @@ public class TasksFragment extends Fragment {
     }
 
     private void onNewTask(String taskName) {
-        if (mPersistence.createTask(taskName, mList.getId())) {
+        /*if (mPersistence.createTask(taskName, mList.getId())) {
             loadTasks();
         } else {
             Log.e("Tonali", "Could not create " + taskName);
+        }*/
+        Task task = mPersistence.createNewTask(taskName, mList.getId());
+        if (task != null) {
+            mAdapter.addTask(task, 0);
+        } else {
+            Log.e("Tonali", "Could not create task " + taskName);
         }
     }
 

@@ -66,7 +66,7 @@ public class Persistence {
         ArrayList<Task> tasks = new ArrayList<>();
         ArrayList<Task> tasksDone = new ArrayList<>();
         SQLiteDatabase db = new SqlHelper(mContext).getReadableDatabase();
-        String[] columns = {"id", "task", "done"};
+        String[] columns = {"id", "task", "done", "created"};
         String[] args = new String[1];
         args[0] = Integer.toString(list);
         Cursor cursor = db.query(SqlHelper.TASKS_TABLE,
@@ -84,6 +84,7 @@ public class Persistence {
             task.setId(id);
             task.setTask(text);
             task.setDone(done != 0);
+            task.setCreated(new Date(cursor.getLong(cursor.getColumnIndex("created"))));
             if (task.isDone()) {
                 tasksDone.add(task);
             } else {
@@ -112,6 +113,7 @@ public class Persistence {
         }
     }
 
+    @Deprecated
     public boolean createTask(String name, int list) {
         SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
         Date today = new Date();
@@ -128,6 +130,28 @@ public class Persistence {
         } else {
             return true;
         }
+    }
+
+    public Task createNewTask(String name, int list) {
+        Task task = null;
+        Date today = new Date();
+        SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
+        ContentValues entry = new ContentValues();
+        entry.put("task", name);
+        entry.put("list", list);
+        entry.put("done", 0);
+        entry.put("cleared", 0);
+        entry.put("created", today.getTime());
+        entry.put("modified", today.getTime());
+        long id = db.insert(SqlHelper.TASKS_TABLE, null, entry);
+        if (id > -1) {
+            task = new Task();
+            task.setId((int)id);
+            task.setTask(name);
+            task.setDone(false);
+            task.setCreated(today);
+        }
+        return task;
     }
 
     public boolean updateTask(int task, String name) {
