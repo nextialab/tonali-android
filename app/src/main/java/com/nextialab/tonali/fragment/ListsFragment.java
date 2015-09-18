@@ -118,7 +118,7 @@ public class ListsFragment extends Fragment {
     }
 
     public void goToList(List list) {
-        if (mListener != null) mListener.goToList(list);
+        mListener.goToList(list);
     }
 
 }

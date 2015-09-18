@@ -20,4 +20,5 @@
     <string name="about_swipe_left">Swipe left to clear task</string>
     <string name="about_developer" translatable="false">Nelson I. Gonzalez</string>
     <string name="about_developer_email" translatable="false">nigm2005@gmail.com</string>
+    <string name="description_placeholder">Description</string>
 </resources>

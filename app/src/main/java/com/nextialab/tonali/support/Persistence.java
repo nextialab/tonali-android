@@ -23,28 +23,6 @@ public class Persistence {
         mContext = context;
     }
 
-    public ArrayList<List> getLists() {
-        ArrayList<List> lists = new ArrayList<>();
-        SQLiteDatabase db = new SqlHelper(mContext).getReadableDatabase();
-        String[] columns = {"list", "id"};
-        Cursor cursor = db.query(SqlHelper.LISTS_TABLE,
-                columns,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null);
-        while (cursor.moveToNext()) {
-            String listName = cursor.getString(cursor.getColumnIndex("list"));
-            int listId = cursor.getInt(cursor.getColumnIndex("id"));
-            List list = new List(listName, listId);
-            lists.add(list);
-        }
-        cursor.close();
-        return lists;
-    }
-
     public ArrayList<List> getListsWithCount() {
         ArrayList<List> lists = new ArrayList<>();
         SQLiteDatabase db = new SqlHelper(mContext).getReadableDatabase();
@@ -66,7 +44,7 @@ public class Persistence {
         ArrayList<Task> tasks = new ArrayList<>();
         ArrayList<Task> tasksDone = new ArrayList<>();
         SQLiteDatabase db = new SqlHelper(mContext).getReadableDatabase();
-        String[] columns = {"id", "task", "done", "created"};
+        String[] columns = {"id", "task", "description", "done", "notification", "created"};
         String[] args = new String[1];
         args[0] = Integer.toString(list);
         Cursor cursor = db.query(SqlHelper.TASKS_TABLE,
@@ -77,13 +55,13 @@ public class Persistence {
                 null,
                 "created DESC");
         while (cursor.moveToNext()) {
-            int id = cursor.getInt(cursor.getColumnIndex("id"));
-            String text = cursor.getString(cursor.getColumnIndex("task"));
-            int done = cursor.getInt(cursor.getColumnIndex("done"));
             Task task = new Task();
-            task.setId(id);
-            task.setTask(text);
+            task.setId(cursor.getInt(cursor.getColumnIndex("id")));
+            task.setTask(cursor.getString(cursor.getColumnIndex("task")));
+            task.setDescription(cursor.getString(cursor.getColumnIndex("description")));
+            int done = cursor.getInt(cursor.getColumnIndex("done"));
             task.setDone(done != 0);
+            task.setNotification(new Date(cursor.getLong(cursor.getColumnIndex("notification"))));
             task.setCreated(new Date(cursor.getLong(cursor.getColumnIndex("created"))));
             if (task.isDone()) {
                 tasksDone.add(task);
@@ -113,34 +91,17 @@ public class Persistence {
         }
     }
 
-    @Deprecated
-    public boolean createTask(String name, int list) {
-        SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
-        Date today = new Date();
-        ContentValues entry = new ContentValues();
-        entry.put("task", name);
-        entry.put("list", list);
-        entry.put("done", 0);
-        entry.put("cleared", 0);
-        entry.put("created", today.getTime());
-        entry.put("modified", today.getTime());
-        long id = db.insert(SqlHelper.TASKS_TABLE, null, entry);
-        if (id == -1) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
     public Task createNewTask(String name, int list) {
         Task task = null;
         Date today = new Date();
         SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
         ContentValues entry = new ContentValues();
         entry.put("task", name);
+        entry.put("description", "");
         entry.put("list", list);
         entry.put("done", 0);
         entry.put("cleared", 0);
+        entry.put("notification", 0);
         entry.put("created", today.getTime());
         entry.put("modified", today.getTime());
         long id = db.insert(SqlHelper.TASKS_TABLE, null, entry);
@@ -159,23 +120,6 @@ public class Persistence {
         Date today = new Date();
         ContentValues entry = new ContentValues();
         entry.put("task", name);
-        entry.put("modified", today.getTime());
-        String[] args = new String[1];
-        args[0] = Integer.toString(task);
-        int rows = db.update(SqlHelper.TASKS_TABLE, entry, "id=?", args);
-        if (rows > 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @Deprecated
-    public boolean setTaskDone(int task) {
-        SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
-        Date today = new Date();
-        ContentValues entry = new ContentValues();
-        entry.put("done", 1);
         entry.put("modified", today.getTime());
         String[] args = new String[1];
         args[0] = Integer.toString(task);

@@ -2,6 +2,7 @@ package com.nextialab.tonali;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -11,9 +12,11 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.crashlytics.android.Crashlytics;
+import com.nextialab.tonali.fragment.DetailsFragment;
 import com.nextialab.tonali.fragment.ListsFragment;
 import com.nextialab.tonali.fragment.TasksFragment;
 import com.nextialab.tonali.model.List;
+import com.nextialab.tonali.model.Task;
 import com.nextialab.tonali.support.ActivityListener;
 import io.fabric.sdk.android.Fabric;
 
@@ -21,13 +24,17 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
 
     enum Section {
         LISTS,
-        TASKS
+        TASKS,
+        DETAILS
     }
 
     private Section mCurrentSection = Section.LISTS;
 
     private ListsFragment mListsFragment;
     private TasksFragment mTasksFragment;
+    private DetailsFragment mDetailsFragment;
+
+    private FloatingActionButton mFloatingActionButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.home_toolbar);
+        mFloatingActionButton = (FloatingActionButton) findViewById(R.id.floating_button);
         setSupportActionBar(toolbar);
         mListsFragment = new ListsFragment();
         getSupportFragmentManager().beginTransaction().add(R.id.main_container, mListsFragment).commit();
@@ -65,8 +73,16 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
 
     @Override
     public void onBackPressed() {
-        getSupportActionBar().setTitle(R.string.title_activity_home);
-        mCurrentSection = Section.LISTS;
+        switch (mCurrentSection) {
+            case DETAILS:
+                mFloatingActionButton.setVisibility(View.VISIBLE);
+                mCurrentSection = Section.TASKS;
+                break;
+            case TASKS:
+                getSupportActionBar().setTitle(R.string.title_activity_home);
+                mCurrentSection = Section.LISTS;
+                break;
+        }
         super.onBackPressed();
     }
 
@@ -93,6 +109,21 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
         transaction.addToBackStack(null);
         transaction.commit();
         mCurrentSection = Section.TASKS;
+    }
+
+    @Override
+    public void goToTask(Task task) {
+        Bundle data = new Bundle();
+        data.putParcelable(DetailsFragment.TASK, task);
+        mDetailsFragment = new DetailsFragment();
+        mDetailsFragment.setArguments(data);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right);
+        transaction.replace(R.id.main_container, mDetailsFragment);
+        transaction.addToBackStack(null);
+        mFloatingActionButton.setVisibility(View.INVISIBLE);
+        transaction.commit();
+        mCurrentSection = Section.DETAILS;
     }
 
 }

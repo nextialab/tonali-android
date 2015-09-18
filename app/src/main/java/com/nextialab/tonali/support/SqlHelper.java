@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class SqlHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String DATABASE_NAME = "Tonali.db";
 
     public static final String LISTS_TABLE = "lists";
@@ -32,9 +32,11 @@ public class SqlHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE " + TASKS_TABLE + " (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "task TEXT, " +
+                "description TEXT, " +
                 "list INTEGER, " +
                 "done INTEGER, " +
                 "cleared INTEGER, " +
+                "notification INTEGER, " +
                 "created INTEGER, " +
                 "modified INTEGER" +
                 ");");
@@ -42,6 +44,10 @@ public class SqlHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        if (oldVersion == 1) {
+            db.execSQL("ALTER TABLE " + TASKS_TABLE + " ADD description TEXT ");
+            db.execSQL("ALTER TABLE " + TASKS_TABLE + " ADD notification INTEGER ");
+            db.execSQL("UPDATE " + TASKS_TABLE + " SET description='', notification=0");
+        }
     }
 }

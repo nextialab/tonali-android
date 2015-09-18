@@ -40,35 +40,31 @@ public class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnTo
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            boolean result = false;
-            try {
-                float diffY = e2.getY() - e1.getY();
-                float diffX = e2.getX() - e1.getX();
-                if (Math.abs(diffX) > Math.abs(diffY)) {
-                    if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
-                        if (diffX > 0) {
-                            onSwipeRight();
-                        } else {
-                            onSwipeLeft();
-                        }
+            float diffY = e2.getY() - e1.getY();
+            float diffX = e2.getX() - e1.getX();
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffX > 0) {
+                        onSwipeRight();
+                    } else {
+                        onSwipeLeft();
                     }
-                    result = true;
                 }
-                result = true;
-            } catch (Exception exception) {
-                exception.printStackTrace();
             }
-            return result;
+            return true;
         }
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
+            if (!mTask.isDone()) {
+                mTasksFragment.goToTask(mTask);
+            }
             return true;
         }
 
         @Override
         public void onLongPress(MotionEvent e) {
-            mTasksFragment.onEditTask(mTask.getId(), mTask.getTask());
+
         }
 
         private void onSwipeRight() {

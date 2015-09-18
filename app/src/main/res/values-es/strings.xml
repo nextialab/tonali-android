@@ -17,5 +17,6 @@
     <string name="title_activity_about">Acerca de</string>
     <string name="about_tasks">Tareas</string>
     <string name="about_swipe_right">Desliza a la derecha para marcar como completa/incompleta</string>
-    <string name="about_swipe_left">Deslizar a la izqeuirda para borrar una tarea</string>
+    <string name="about_swipe_left">Deslizar a la izquierda para borrar una tarea</string>
+    <string name="description_placeholder">Descripción</string>
 </resources>

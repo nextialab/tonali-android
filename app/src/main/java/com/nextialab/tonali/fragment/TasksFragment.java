@@ -20,6 +20,7 @@ import com.nextialab.tonali.R;
 import com.nextialab.tonali.adapter.TasksAdapter;
 import com.nextialab.tonali.model.List;
 import com.nextialab.tonali.model.Task;
+import com.nextialab.tonali.support.ActivityListener;
 import com.nextialab.tonali.support.Persistence;
 
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class TasksFragment extends Fragment {
     private List mList;
 
     private TasksAdapter mAdapter = new TasksAdapter(this);
-
+    private ActivityListener mListener = null;
     private Persistence mPersistence;
 
     public TasksFragment() {
@@ -46,6 +47,9 @@ public class TasksFragment extends Fragment {
         super.onAttach(activity);
         mPersistence = new Persistence(activity);
         mAdapter.setPersistence(mPersistence);
+        if (activity instanceof ActivityListener) {
+            mListener = (ActivityListener) activity;
+        }
     }
 
     @Override
@@ -68,11 +72,6 @@ public class TasksFragment extends Fragment {
     }
 
     private void onNewTask(String taskName) {
-        /*if (mPersistence.createTask(taskName, mList.getId())) {
-            loadTasks();
-        } else {
-            Log.e("Tonali", "Could not create " + taskName);
-        }*/
         Task task = mPersistence.createNewTask(taskName, mList.getId());
         if (task != null) {
             mAdapter.addTask(task, 0);
@@ -124,56 +123,8 @@ public class TasksFragment extends Fragment {
         dialog.show();
     }
 
-    private void onUpdateTask(int task, String newName) {
-        if (mPersistence.updateTask(task, newName)) {
-            loadTasks();
-        } else {
-            Log.e("Tonali", "Could not update task " + task + " to " + newName);
-        }
-    }
-
-    public void onEditTask(final int task, String currentName) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        View input = getActivity().getLayoutInflater().inflate(R.layout.new_task_layout, null);
-        final TextInputLayout editTextWrapper = (TextInputLayout) input.findViewById(R.id.lists_input_new_task_wrapper);
-        final EditText editText = (EditText) input.findViewById(R.id.lists_input_new_task);
-        editText.setText(currentName);
-        editText.setSelection(currentName.length());
-        builder.setView(input);
-        builder.setPositiveButton(R.string.tasks_update_task, null);
-        builder.setNegativeButton(R.string.lists_cancel_list, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        final AlertDialog dialog = builder.create();
-        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-                }
-            }
-        });dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialogInterface) {
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        editTextWrapper.setErrorEnabled(false);
-                        String taskName = editText.getText().toString();
-                        if (taskName.length() > 0) {
-                            onUpdateTask(task, taskName);
-                            dialog.dismiss();
-                        } else {
-                            editTextWrapper.setError(getString(R.string.tasks_new_task_error));
-                        }
-                    }
-                });
-            }
-        });
-        dialog.show();
+    public void goToTask(Task task) {
+        mListener.goToTask(task);
     }
 
 }

@@ -5,4 +5,5 @@
     <color name="tonali_white">#FFFFFFFF</color>
     <color name="md_blue_500">#FF2196F3</color>
     <color name="md_deep_purple_500">#673AB7</color>
+    <color name="md_gray_100">#F5F5F5</color>
 </resources>
