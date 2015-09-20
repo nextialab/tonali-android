@@ -15,6 +15,7 @@ import com.nextialab.tonali.adapter.TasksAdapter;
 import com.nextialab.tonali.fragment.TasksFragment;
 import com.nextialab.tonali.model.Task;
 import com.nextialab.tonali.support.Persistence;
+import com.nextialab.tonali.support.TonaliAlarmManager;
 
 /**
  * Created by Nelson on 9/8/2015.
@@ -46,8 +47,6 @@ public class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnTo
                 if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
                     if (diffX > 0) {
                         onSwipeRight();
-                    } else {
-                        onSwipeLeft();
                     }
                 }
             }
@@ -74,6 +73,9 @@ public class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnTo
                 if (mTask.isDone()) {
                     view.setPaintFlags(view.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                     view.setTextColor(view.getContext().getResources().getColor(R.color.tonali_gray));
+                    if (mTask.hasAlarm()) {
+                        TonaliAlarmManager.removeAlarmForTask(mTasksFragment.getActivity(), mTask);
+                    }
                 } else {
                     view.setPaintFlags(view.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                     view.setTextColor(view.getContext().getResources().getColor(R.color.tonali_black));

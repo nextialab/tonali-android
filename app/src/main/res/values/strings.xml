@@ -21,4 +21,9 @@
     <string name="about_developer" translatable="false">Nelson I. Gonzalez</string>
     <string name="about_developer_email" translatable="false">nigm2005@gmail.com</string>
     <string name="description_placeholder">Description</string>
+    <string name="title_activity_edit">EditActivity</string>
+    <string name="action_done">Done</string>
+    <string name="notification_set">Alarm set to</string>
+    <string name="notification_removed">Alarm removed</string>
+    <string name="list_delete">Delete</string>
 </resources>

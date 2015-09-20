@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class SqlHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     private static final String DATABASE_NAME = "Tonali.db";
 
     public static final String LISTS_TABLE = "lists";
@@ -37,6 +37,7 @@ public class SqlHelper extends SQLiteOpenHelper {
                 "done INTEGER, " +
                 "cleared INTEGER, " +
                 "notification INTEGER, " +
+                "alarm INTEGER, " +
                 "created INTEGER, " +
                 "modified INTEGER" +
                 ");");
@@ -47,7 +48,11 @@ public class SqlHelper extends SQLiteOpenHelper {
         if (oldVersion == 1) {
             db.execSQL("ALTER TABLE " + TASKS_TABLE + " ADD description TEXT ");
             db.execSQL("ALTER TABLE " + TASKS_TABLE + " ADD notification INTEGER ");
-            db.execSQL("UPDATE " + TASKS_TABLE + " SET description='', notification=0");
+            db.execSQL("ALTER TABLE " + TASKS_TABLE + " ADD alarm INTEGER ");
+            db.execSQL("UPDATE " + TASKS_TABLE + " SET description='', alarm=0, notification=0");
+        } else if (oldVersion == 2) {
+            db.execSQL("ALTER TABLE " + TASKS_TABLE + " ADD alarm INTEGER ");
+            db.execSQL("UPDATE " + TASKS_TABLE + " SET alarm=0");
         }
     }
 }

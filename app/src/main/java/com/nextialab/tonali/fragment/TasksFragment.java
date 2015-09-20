@@ -124,6 +124,7 @@ public class TasksFragment extends Fragment {
     }
 
     public void goToTask(Task task) {
+        task.setList(mList.getListName());
         mListener.goToTask(task);
     }
 

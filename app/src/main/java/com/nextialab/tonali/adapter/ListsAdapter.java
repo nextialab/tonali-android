@@ -12,47 +12,27 @@ import android.widget.TextView;
 
 import com.nextialab.tonali.R;
 import com.nextialab.tonali.fragment.ListsFragment;
+import com.nextialab.tonali.holder.ListViewHolder;
 import com.nextialab.tonali.model.List;
+import com.nextialab.tonali.support.Persistence;
 
 import java.util.ArrayList;
 
 /**
  * Created by nigonzalez on 7/7/15.
  */
-public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.ViewHolder> {
+public class ListsAdapter extends RecyclerView.Adapter<ListViewHolder> {
 
     private ArrayList<List> mLists = new ArrayList<>();
     private ListsFragment mListsFragment;
-
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-        public View mView;
-        private List mList;
-        private ListsFragment mListsFragment;
-
-        public ViewHolder(View v) {
-            super(v);
-            mView = v;
-            mView.setOnClickListener(this);
-        }
-
-        public void setList(List list) {
-            mList = list;
-        }
-
-        public void setListsFragment(ListsFragment listsFragment) {
-            mListsFragment = listsFragment;
-        }
-
-        @Override
-        public void onClick(View view) {
-            mListsFragment.goToList(mList);
-        }
-
-    }
+    private Persistence mPersistence;
 
     public ListsAdapter(ListsFragment listsFragment) {
         mListsFragment = listsFragment;
+    }
+
+    public void setPersistence(Persistence persistence) {
+        mPersistence = persistence;
     }
 
     public void setLists(ArrayList<List> data) {
@@ -60,20 +40,27 @@ public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.ViewHolder> 
         notifyDataSetChanged();
     }
 
-    public void pushLists(ArrayList<List> data) {
-        mLists.addAll(0, data);
-        notifyDataSetChanged();
+    public void addList(List list, int position) {
+        mLists.add(position, list);
+        notifyItemInserted(position);
+    }
+
+    public void removeList(List list) {
+        int position = mLists.indexOf(list);
+        mLists.remove(position);
+        notifyItemRemoved(position);
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_list, parent, false);
-        ViewHolder vh = new ViewHolder(view);
+        ListViewHolder vh = new ListViewHolder(parent.getContext(), mPersistence, view);
+        vh.setListsAdapter(this);
         return vh;
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ListViewHolder holder, int position) {
         ((TextView) holder.mView.findViewById(R.id.list_name)).setText(mLists.get(position).getListName());
         ((TextView) holder.mView.findViewById(R.id.list_tasks_counter)).setText(Integer.toString(mLists.get(position).getTasksCount()));
         holder.setList(mLists.get(position));

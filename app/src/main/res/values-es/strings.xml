@@ -19,4 +19,9 @@
     <string name="about_swipe_right">Desliza a la derecha para marcar como completa/incompleta</string>
     <string name="about_swipe_left">Deslizar a la izquierda para borrar una tarea</string>
     <string name="description_placeholder">Descripción</string>
+    <string name="title_activity_edit">EditActivity</string>
+    <string name="action_done">Completo</string>
+    <string name="notification_set">Alarma puesta para</string>
+    <string name="notification_removed">Alarma removida</string>
+    <string name="list_delete">Borrar</string>
 </resources>

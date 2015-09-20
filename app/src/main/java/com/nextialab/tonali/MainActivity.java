@@ -18,6 +18,10 @@ import com.nextialab.tonali.fragment.TasksFragment;
 import com.nextialab.tonali.model.List;
 import com.nextialab.tonali.model.Task;
 import com.nextialab.tonali.support.ActivityListener;
+import com.nextialab.tonali.support.Persistence;
+
+import java.util.ArrayList;
+
 import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity implements ActivityListener {
@@ -39,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // TODO: uncomment in production!!!
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.home_toolbar);

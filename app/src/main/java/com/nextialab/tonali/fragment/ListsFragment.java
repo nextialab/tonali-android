@@ -44,6 +44,7 @@ public class ListsFragment extends Fragment {
     public void onAttach (Activity activity) {
         super.onAttach(activity);
         mPersistence = new Persistence(activity);
+        mAdapter.setPersistence(mPersistence);
         if (activity instanceof ActivityListener) {
             mListener = (ActivityListener) activity;
         }
@@ -62,13 +63,13 @@ public class ListsFragment extends Fragment {
 
     private void loadLists() {
         ArrayList<List> lists = mPersistence.getListsWithCount();
-        //ArrayList<List> lists = mPersistence.getLists();
         mAdapter.setLists(lists);
     }
 
     private void onNewList(String listName) {
-        if (mPersistence.createList(listName)) {
-            loadLists();
+        List list = mPersistence.createNewList(listName);
+        if (list != null) {
+            mAdapter.addList(list, 0);
         } else {
             Log.e("tonali", "Could not create " + listName);
         }
