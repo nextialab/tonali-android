@@ -6,8 +6,11 @@ import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.nextialab.tonali.R;
@@ -28,6 +31,28 @@ public class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnTo
     private Persistence mPersistence;
     private TasksFragment mTasksFragment;
     private TasksAdapter mTasksAdapter;
+
+    PopupMenu.OnMenuItemClickListener mOnMenuItemClickListener = new PopupMenu.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.task_rename:
+                    mTasksFragment.onUpdateTask(mTask);
+                    break;
+                case R.id.task_delete:
+                    if (mPersistence.setTaskCleared(mTask.getId())) {
+                        if (mTask.hasAlarm()) {
+                            TonaliAlarmManager.removeAlarmForTask(mTasksFragment.getActivity(), mTask);
+                        }
+                        mTasksAdapter.removeTask(mTask);
+                    } else {
+                        Log.e("TaskAdapter", "Could not clear task");
+                    }
+                    break;
+            }
+            return true;
+        }
+    };
 
     class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
@@ -63,7 +88,11 @@ public class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnTo
 
         @Override
         public void onLongPress(MotionEvent e) {
-
+            PopupMenu menu = new PopupMenu(mTasksFragment.getActivity(), mView);
+            menu.setOnMenuItemClickListener(mOnMenuItemClickListener);
+            MenuInflater inflater = menu.getMenuInflater();
+            inflater.inflate(R.menu.menu_task, menu.getMenu());
+            menu.show();
         }
 
         private void onSwipeRight() {
@@ -88,11 +117,7 @@ public class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnTo
 
         private void onSwipeLeft() {
             Log.i("TaskAdapter", "Swipe left");
-            if (mPersistence.setTaskCleared(mTask.getId())) {
-                mTasksAdapter.removeTask(mTask);
-            } else {
-                Log.e("TaskAdapter", "Could not clear task");
-            }
+
         }
 
     }

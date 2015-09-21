@@ -6,12 +6,12 @@
     <string name="action_settings">Settings</string>
     <string name="lists_create_list">Create</string>
     <string name="lists_cancel_list">Cancel</string>
-    <string name="lists_new_list">New list</string>
-    <string name="lists_new_list_title">Your awesome new list name</string>
+    <string name="lists_new_list">Name</string>
+    <string name="lists_new_list_title">New list</string>
     <string name="lists_new_list_error">List name cannot be empty</string>
-    <string name="tasks_new_task">New task</string>
+    <string name="tasks_new_task">Name</string>
     <string name="tasks_new_task_error">Task name cannot be empty</string>
-    <string name="tasks_new_task_title">Your productive new task</string>
+    <string name="tasks_new_task_title">New task</string>
     <string name="tasks_update_task">Update</string>
     <string name="app_clear">Clear</string>
     <string name="title_activity_about">About</string>
@@ -20,10 +20,23 @@
     <string name="about_swipe_left">Swipe left to clear task</string>
     <string name="about_developer" translatable="false">Nelson I. Gonzalez</string>
     <string name="about_developer_email" translatable="false">nigm2005@gmail.com</string>
-    <string name="description_placeholder">Description</string>
+    <string name="description_placeholder">Description (press here)</string>
     <string name="title_activity_edit">EditActivity</string>
     <string name="action_done">Done</string>
     <string name="notification_set">Alarm set to</string>
     <string name="notification_removed">Alarm removed</string>
     <string name="list_delete">Delete</string>
+    <string name="lists_update_list">Update</string>
+    <string name="lists_update_list_title">Update list</string>
+    <string name="tasks_update_task_title">Update task</string>
+    <string name="list_rename">Rename</string>
+    <string name="task_delete">Delete</string>
+    <string name="task_rename">Rename</string>
+    <string name="about_message">Organize your life with Tonali</string>
+    <string name="about_lists">Lists</string>
+    <string name="about_lists_long_press">Long press to show the contextual menu</string>
+    <string name="about_tasks_long_press">Long press to show contextual menu</string>
+    <string name="about_list_single_press">Press to show tasks in list</string>
+    <string name="about_tasks_single_press">Press to show task details</string>
+    <string name="button_got_it">Got it!</string>
 </resources>

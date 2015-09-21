@@ -26,6 +26,36 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@string/about_message"
+            android:id="@+id/textView8"
+            android:paddingBottom="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/about_lists"
+            android:id="@+id/textView9"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/about_tasks_long_press"
+            android:id="@+id/textView10"
+            android:paddingTop="8dp"
+            android:paddingBottom="4dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/about_list_single_press"
+            android:id="@+id/textView11"
+            android:paddingTop="4dp"
+            android:paddingBottom="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="@string/about_tasks"
             android:id="@+id/textView3"
             android:textSize="20sp" />
@@ -41,10 +71,26 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/about_swipe_left"
+            android:text="@string/about_tasks_long_press"
             android:id="@+id/textView5"
             android:paddingTop="4dp"
-            android:paddingBottom="8dp" />
+            android:paddingBottom="4dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/about_tasks_single_press"
+            android:id="@+id/textView12"
+            android:paddingBottom="8dp"
+            android:paddingTop="4dp" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_got_it"
+            android:id="@+id/button"
+            android:layout_gravity="center_horizontal"
+            android:onClick="gotIt" />
 
         <TextView
             android:layout_width="wrap_content"

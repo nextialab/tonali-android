@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:padding="24dp">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/tasks_new_task_title"
+        android:text="@string/tasks_update_task_title"
         android:id="@+id/textView2"
         android:textSize="20sp"
         android:layout_marginBottom="20dp" />
 
+
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/lists_input_new_task"
+            android:id="@+id/lists_input_update_task"
             android:hint="@string/tasks_new_task"
             android:capitalize="sentences" />
-
 
 </LinearLayout>

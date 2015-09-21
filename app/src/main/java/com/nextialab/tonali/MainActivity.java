@@ -1,6 +1,7 @@
 package com.nextialab.tonali;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentTransaction;
@@ -26,6 +27,10 @@ import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity implements ActivityListener {
 
+    public static final String GENERAL = "general";
+    public static final String GENERAL_FIRST_TIME = "firstTime";
+    public static final String EDIT_FIELD = "editField";
+
     enum Section {
         LISTS,
         TASKS,
@@ -43,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // TODO: uncomment in production!!!
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.home_toolbar);
@@ -51,6 +55,13 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
         setSupportActionBar(toolbar);
         mListsFragment = new ListsFragment();
         getSupportFragmentManager().beginTransaction().add(R.id.main_container, mListsFragment).commit();
+        SharedPreferences prefs = getSharedPreferences(GENERAL, MODE_PRIVATE);
+        if (prefs.getBoolean(GENERAL_FIRST_TIME, true)) {
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean(GENERAL_FIRST_TIME, false);
+            editor.commit();
+            startActivity(new Intent(this, AboutActivity.class));
+        }
     }
 
     @Override

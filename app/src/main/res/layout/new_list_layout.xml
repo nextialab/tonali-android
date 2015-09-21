@@ -13,9 +13,6 @@
         android:textSize="20sp"
         android:layout_marginBottom="20dp" />
 
-    <android.support.design.widget.TextInputLayout android:layout_width="match_parent"
-                     android:layout_height="wrap_content"
-                     android:id="@+id/lists_input_new_list_wrapper">
 
         <EditText
             android:layout_width="match_parent"
@@ -24,7 +21,5 @@
             android:hint="@string/lists_new_list"
             android:capitalize="sentences"
             android:focusable="true" />
-
-    </android.support.design.widget.TextInputLayout>
 
 </LinearLayout>

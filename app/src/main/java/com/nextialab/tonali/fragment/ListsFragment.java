@@ -75,17 +75,31 @@ public class ListsFragment extends Fragment {
         }
     }
 
+    private void onUpdateList(List list, String name) {
+        if (mPersistence.updateListName(list.getId(), name)) {
+            list.setListName(name);
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
     public void onNewList() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View input = getActivity().getLayoutInflater().inflate(R.layout.new_list_layout, null);
-        final TextInputLayout editTextWrapper = (TextInputLayout) input.findViewById(R.id.lists_input_new_list_wrapper);
         final EditText editText = (EditText) input.findViewById(R.id.lists_input_new_list);
         builder.setView(input);
-        builder.setPositiveButton(R.string.lists_create_list, null);
+        builder.setPositiveButton(R.string.lists_create_list, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String listName = editText.getText().toString();
+                if (listName.length() > 0) {
+                    onNewList(listName);
+                }
+            }
+        });
         builder.setNegativeButton(R.string.lists_cancel_list, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
+
             }
         });
         final AlertDialog dialog = builder.create();
@@ -97,22 +111,38 @@ public class ListsFragment extends Fragment {
                 }
             }
         });
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+        dialog.show();
+    }
+
+    public void onUpdateList(final List list) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        View input = getActivity().getLayoutInflater().inflate(R.layout.dialog_list_update, null);
+        final EditText editText = (EditText) input.findViewById(R.id.lists_input_update_list);
+        editText.setText(list.getListName());
+        editText.setSelection(list.getListName().length());
+        builder.setView(input);
+        builder.setPositiveButton(R.string.lists_update_list, new DialogInterface.OnClickListener() {
             @Override
-            public void onShow(DialogInterface dialogInterface) {
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        editTextWrapper.setErrorEnabled(false);
-                        String listName = editText.getText().toString();
-                        if (listName.length() > 0) {
-                            onNewList(listName);
-                            dialog.dismiss();
-                        } else {
-                            editTextWrapper.setError(getString(R.string.lists_new_list_error));
-                        }
-                    }
-                });
+            public void onClick(DialogInterface dialog, int which) {
+                String listName = editText.getText().toString();
+                if (listName.length() > 0) {
+                    onUpdateList(list, listName);
+                }
+            }
+        });
+        builder.setNegativeButton(R.string.lists_cancel_list, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        final AlertDialog dialog = builder.create();
+        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                }
             }
         });
         dialog.show();

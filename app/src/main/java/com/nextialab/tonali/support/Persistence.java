@@ -145,7 +145,23 @@ public class Persistence {
         return task;
     }
 
-    public boolean updateTask(int task, String name) {
+    public boolean updateListName(int list, String name) {
+        SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
+        Date today = new Date();
+        ContentValues entry = new ContentValues();
+        entry.put("list", name);
+        entry.put("modified", today.getTime());
+        String[] args = new String[1];
+        args[0] = Integer.toString(list);
+        int rows = db.update(SqlHelper.LISTS_TABLE, entry, "id=?", args);
+        if (rows > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean updateTaskName(int task, String name) {
         SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
         Date today = new Date();
         ContentValues entry = new ContentValues();
@@ -199,6 +215,22 @@ public class Persistence {
         ContentValues entry = new ContentValues();
         entry.put("done", 1);
         entry.put("cleared", 1);
+        entry.put("modified", today.getTime());
+        String[] args = new String[1];
+        args[0] = Integer.toString(task);
+        int rows = db.update(SqlHelper.TASKS_TABLE, entry, "id=?", args);
+        if (rows > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean updateTaskDescription(int task, String description) {
+        SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
+        Date today = new Date();
+        ContentValues entry = new ContentValues();
+        entry.put("description", description);
         entry.put("modified", today.getTime());
         String[] args = new String[1];
         args[0] = Integer.toString(task);

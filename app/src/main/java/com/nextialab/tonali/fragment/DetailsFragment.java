@@ -17,6 +17,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.nextialab.tonali.EditActivity;
+import com.nextialab.tonali.MainActivity;
 import com.nextialab.tonali.R;
 import com.nextialab.tonali.model.Task;
 import com.nextialab.tonali.support.Persistence;
@@ -31,12 +32,14 @@ import java.util.GregorianCalendar;
 public class DetailsFragment extends Fragment {
 
     public static final String TASK = "task";
+    public static final int REQUEST_CODE = 0;
 
     private Persistence mPersistence = null;
     private GregorianCalendar mNotification = null;
     private ImageView mAlarm = null;
     private TextView mDate = null;
     private TextView mTime = null;
+    private TextView mDescription = null;
 
     private Task mTask;
 
@@ -46,6 +49,20 @@ public class DetailsFragment extends Fragment {
         mPersistence = new Persistence(activity);
     }
 
+    View.OnClickListener mOnDateClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            showDatePicker(mNotification.get(Calendar.YEAR), mNotification.get(Calendar.MONTH), mNotification.get(Calendar.DAY_OF_MONTH));
+        }
+    };
+
+    View.OnClickListener mOnTimeClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            showTimePicker(mNotification.get(Calendar.HOUR_OF_DAY), mNotification.get(Calendar.MINUTE));
+        }
+    };
+
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_details, container, false);
@@ -54,8 +71,10 @@ public class DetailsFragment extends Fragment {
         mAlarm = (ImageView) view.findViewById(R.id.notification_active);
         mDate = (TextView) view.findViewById(R.id.notification_date);
         mTime = (TextView) view.findViewById(R.id.notification_time);
+        mDescription = (TextView) view.findViewById(R.id.task_description);
         if (mTask.getDescription().length() > 0) {
-            ((TextView) view.findViewById(R.id.task_description)).setText(mTask.getDescription());
+            mDescription.setText(mTask.getDescription());
+            mDescription.setTextColor(getResources().getColor(R.color.tonali_black));
         }
         mNotification = new GregorianCalendar();
         if (mTask.getNotification().getTime() == 0) {
@@ -69,29 +88,20 @@ public class DetailsFragment extends Fragment {
             mAlarm.setImageResource(R.mipmap.ic_notifications_active_black_24dp);
             mDate.setTextColor(getResources().getColor(R.color.tonali_black));
             mTime.setTextColor(getResources().getColor(R.color.tonali_black));
+        } else {
+            mDate.setOnClickListener(mOnDateClickListener);
+            mTime.setOnClickListener(mOnTimeClickListener);
         }
-        view.findViewById(R.id.task_description).setOnClickListener(new View.OnClickListener() {
+        mDescription.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //onEditDescription();
+                onEditDescription();
             }
         });
         mAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 setAlarm(!mTask.hasAlarm());
-            }
-        });
-        mDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePicker(mNotification.get(Calendar.YEAR), mNotification.get(Calendar.MONTH), mNotification.get(Calendar.DAY_OF_MONTH));
-            }
-        });
-        mTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showTimePicker(mNotification.get(Calendar.HOUR_OF_DAY), mNotification.get(Calendar.MINUTE));
             }
         });
         return view;
@@ -146,11 +156,15 @@ public class DetailsFragment extends Fragment {
                 mDate.setTextColor(getResources().getColor(R.color.tonali_black));
                 mTime.setTextColor(getResources().getColor(R.color.tonali_black));
                 setNotificationAlarm();
+                mDate.setOnClickListener(null);
+                mTime.setOnClickListener(null);
             } else {
                 mAlarm.setImageResource(R.mipmap.ic_notifications_none_black_24dp);
                 mDate.setTextColor(getResources().getColor(R.color.tonali_gray));
                 mTime.setTextColor(getResources().getColor(R.color.tonali_gray));
                 removeNotificationAlarm();
+                mDate.setOnClickListener(mOnDateClickListener);
+                mTime.setOnClickListener(mOnTimeClickListener);
             }
         } else {
             Log.e("Details", "Could not set alarm");
@@ -159,20 +173,46 @@ public class DetailsFragment extends Fragment {
 
     private void setNotificationAlarm() {
         TonaliAlarmManager.setAlarmForTask(getActivity(), mTask, mNotification);
-        Toast.makeText(getActivity(), "Alarm set", Toast.LENGTH_SHORT).show();
+        String message = getString(R.string.notification_set) + " " + mDate.getText().toString() + " " + mTime.getText().toString();
+        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
     }
 
     private void removeNotificationAlarm() {
         TonaliAlarmManager.removeAlarmForTask(getActivity(), mTask);
-        Toast.makeText(getActivity(), "Alarm removed", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), getString(R.string.notification_removed), Toast.LENGTH_SHORT).show();
     }
 
     private void onEditDescription() {
         Intent intent = new Intent(getActivity(), EditActivity.class);
-        getActivity().startActivity(intent);
+        intent.putExtra(MainActivity.EDIT_FIELD, mTask.getDescription());
+        startActivityForResult(intent, REQUEST_CODE);
     }
 
-    private DatePickerDialog.OnDateSetListener dateListener = new DatePickerDialog.OnDateSetListener() {
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_CODE:
+                if (resultCode == Activity.RESULT_OK) {
+                    String description = data.getStringExtra(MainActivity.EDIT_FIELD);
+                    if (mPersistence.updateTaskDescription(mTask.getId(), description)) {
+                        mTask.setDescription(description);
+                        if (description.length() > 0) {
+                            mDescription.setText(description);
+                            mDescription.setTextColor(getResources().getColor(R.color.tonali_black));
+                        } else {
+                            mDescription.setText(R.string.description_placeholder);
+                            mDescription.setTextColor(getResources().getColor(R.color.tonali_gray));
+                        }
+                    } else {
+                        Log.e("Details", "Could not update task description");
+                    }
+                }
+                break;
+        }
+    }
+
+    private DatePickerDialog.OnDateSetListener mDateListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
             mNotification.set(Calendar.YEAR, year);
@@ -184,11 +224,11 @@ public class DetailsFragment extends Fragment {
     };
 
     private void showDatePicker(int year, int month, int day) {
-        DatePickerDialog datePicker = new DatePickerDialog(getActivity(), dateListener, year, month, day);
+        DatePickerDialog datePicker = new DatePickerDialog(getActivity(), mDateListener, year, month, day);
         datePicker.show();
     }
 
-    private TimePickerDialog.OnTimeSetListener timeListener = new TimePickerDialog.OnTimeSetListener() {
+    private TimePickerDialog.OnTimeSetListener mTimeListener = new TimePickerDialog.OnTimeSetListener() {
         @Override
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             mNotification.set(Calendar.HOUR_OF_DAY, hourOfDay);
@@ -199,7 +239,7 @@ public class DetailsFragment extends Fragment {
     };
 
     private void showTimePicker(int hour, int minute) {
-        TimePickerDialog timePicker = new TimePickerDialog(getActivity(), timeListener, hour, minute, false);
+        TimePickerDialog timePicker = new TimePickerDialog(getActivity(), mTimeListener, hour, minute, false);
         timePicker.show();
     }
 

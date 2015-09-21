@@ -15,7 +15,11 @@ import com.nextialab.tonali.R;
 import com.nextialab.tonali.adapter.ListsAdapter;
 import com.nextialab.tonali.fragment.ListsFragment;
 import com.nextialab.tonali.model.List;
+import com.nextialab.tonali.model.Task;
 import com.nextialab.tonali.support.Persistence;
+import com.nextialab.tonali.support.TonaliAlarmManager;
+
+import java.util.ArrayList;
 
 /**
  * Created by Nelson on 9/20/2015.
@@ -33,8 +37,19 @@ public class ListViewHolder extends RecyclerView.ViewHolder implements View.OnTo
         @Override
         public boolean onMenuItemClick(MenuItem item) {
             switch (item.getItemId()) {
+                case R.id.list_rename:
+                    mListsFragment.onUpdateList(mList);
+                    break;
                 case R.id.list_delete:
                     if (mPersistence.setListCleared(mList.getId())) {
+                        if (mList.getTasksCount() > 0) {
+                            ArrayList<Task> tasks = mPersistence.getTasksForList(mList.getId());
+                            for (Task task : tasks) {
+                                if (task.hasAlarm()) {
+                                    TonaliAlarmManager.removeAlarmForTask(mListsFragment.getActivity(), task);
+                                }
+                            }
+                        }
                         mListsAdapter.removeList(mList);
                     } else {
                         Log.e("ListHolder", "Could not set list as cleared");

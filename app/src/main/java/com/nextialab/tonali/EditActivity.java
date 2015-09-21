@@ -1,20 +1,28 @@
 package com.nextialab.tonali;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 
 public class EditActivity extends AppCompatActivity {
+
+    private EditText mEditField = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
+        mEditField = (EditText) findViewById(R.id.edit_field);
+        String description = getIntent().getStringExtra(MainActivity.EDIT_FIELD);
+        mEditField.setText(description);
+        mEditField.setSelection(description.length());
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_edit);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("");
     }
 
@@ -34,6 +42,10 @@ public class EditActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_done) {
+            Intent intent = new Intent();
+            intent.putExtra(MainActivity.EDIT_FIELD, mEditField.getText().toString());
+            setResult(RESULT_OK, intent);
+            finish();
             return true;
         }
 

@@ -10,6 +10,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
+import com.nextialab.tonali.support.Persistence;
 import com.nextialab.tonali.support.TonaliAlarmManager;
 
 /**
@@ -26,6 +27,11 @@ public class AlarmReceiver extends BroadcastReceiver {
         builder.setSmallIcon(R.mipmap.ic_notification);
         builder.setContentTitle(intent.getStringExtra(TonaliAlarmManager.LIST_NAME));
         builder.setContentText(intent.getStringExtra(TonaliAlarmManager.TASK_NAME));
+        int taskId = intent.getIntExtra(TonaliAlarmManager.TASK_ID, -1);
+        if (taskId > -1) {
+            Persistence persistence = new Persistence(context);
+            persistence.setTaskAlarm(taskId, false);
+        }
         builder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
         builder.setAutoCancel(true);
         Intent mIntent = new Intent(context, MainActivity.class);
