@@ -14,6 +14,7 @@ public class SqlHelper extends SQLiteOpenHelper {
 
     public static final String LISTS_TABLE = "lists";
     public static final String TASKS_TABLE = "tasks";
+    public static final String ORDERS_TABLE = "orders";
 
     public SqlHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -25,8 +26,6 @@ public class SqlHelper extends SQLiteOpenHelper {
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "list TEXT, " +
                 "type INTEGER, " +
-                "prev INTEGER, " +
-                "next INTEGER, " +
                 "cleared INTEGER, " +
                 "created INTEGER, " +
                 "modified INTEGER" +
@@ -37,11 +36,16 @@ public class SqlHelper extends SQLiteOpenHelper {
                 "description TEXT, " +
                 "list INTEGER, " +
                 "done INTEGER, " +
-                "prev INTEGER, " +
-                "next INTEGER, " +
                 "cleared INTEGER, " +
                 "notification INTEGER, " +
                 "alarm INTEGER, " +
+                "created INTEGER, " +
+                "modified INTEGER" +
+                ");");
+        db.execSQL("CREATE TABLE " + ORDERS_TABLE + " (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "list INTEGER, " +
+                "_order TEXT, " +
                 "created INTEGER, " +
                 "modified INTEGER" +
                 ");");
@@ -50,30 +54,35 @@ public class SqlHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion == 1) {
-            db.execSQL("ALTER TABLE " + LISTS_TABLE + " ADD prev INTEGER");
-            db.execSQL("ALTER TABLE " + LISTS_TABLE + " ADD next INTEGER");
-            db.execSQL("UPDATE " + LISTS_TABLE + " SET prev=-1, next=-1");
             db.execSQL("ALTER TABLE " + TASKS_TABLE + " ADD description TEXT ");
             db.execSQL("ALTER TABLE " + TASKS_TABLE + " ADD notification INTEGER ");
             db.execSQL("ALTER TABLE " + TASKS_TABLE + " ADD alarm INTEGER ");
-            db.execSQL("ALTER TABLE " + TASKS_TABLE + " ADD prev INTEGER");
-            db.execSQL("ALTER TABLE " + TASKS_TABLE + " ADD next INTEGER");
-            db.execSQL("UPDATE " + TASKS_TABLE + " SET description='', alarm=0, notification=0, prev=-1, next=-1");
+            db.execSQL("UPDATE " + TASKS_TABLE + " SET description='', alarm=0, notification=0");
+            db.execSQL("CREATE TABLE " + ORDERS_TABLE + " (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "list INTEGER, " +
+                    "_order TEXT, " +
+                    "created INTEGER, " +
+                    "modified INTEGER" +
+                    ");");
         } else if (oldVersion == 2) {
-            db.execSQL("ALTER TABLE " + LISTS_TABLE + " ADD prev INTEGER");
-            db.execSQL("ALTER TABLE " + LISTS_TABLE + " ADD next INTEGER");
-            db.execSQL("UPDATE " + LISTS_TABLE + " SET prev=-1, next=-1");
             db.execSQL("ALTER TABLE " + TASKS_TABLE + " ADD alarm INTEGER ");
-            db.execSQL("ALTER TABLE " + TASKS_TABLE + " ADD prev INTEGER");
-            db.execSQL("ALTER TABLE " + TASKS_TABLE + " ADD next INTEGER");
-            db.execSQL("UPDATE " + TASKS_TABLE + " SET alarm=0, prev=-1, next=-1");
+            db.execSQL("UPDATE " + TASKS_TABLE + " SET alarm=0");
+            db.execSQL("CREATE TABLE " + ORDERS_TABLE + " (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "list INTEGER, " +
+                    "_order TEXT, " +
+                    "created INTEGER, " +
+                    "modified INTEGER" +
+                    ");");
         } else if (oldVersion == 3) {
-            db.execSQL("ALTER TABLE " + LISTS_TABLE + " ADD prev INTEGER");
-            db.execSQL("ALTER TABLE " + LISTS_TABLE + " ADD next INTEGER");
-            db.execSQL("UPDATE " + LISTS_TABLE + " SET prev=-1, next=-1");
-            db.execSQL("ALTER TABLE " + TASKS_TABLE + " ADD prev INTEGER");
-            db.execSQL("ALTER TABLE " + TASKS_TABLE + " ADD next INTEGER");
-            db.execSQL("UPDATE " + TASKS_TABLE + " SET prev=-1, next=-1");
+            db.execSQL("CREATE TABLE " + ORDERS_TABLE + " (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "list INTEGER, " +
+                    "_order TEXT, " +
+                    "created INTEGER, " +
+                    "modified INTEGER" +
+                    ");");
         }
     }
 }

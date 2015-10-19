@@ -23,11 +23,10 @@ public class Persistence {
         mContext = context;
     }
 
-    // TODO: check why l.cleared is not taken in account
     public ArrayList<List> getListsWithCount() {
         ArrayList<List> lists = new ArrayList<>();
         SQLiteDatabase db = new SqlHelper(mContext).getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT l.id id, l.list list, l.cleared cleared, COUNT(t.id) tasks FROM lists l LEFT JOIN tasks t ON l.id = t.list AND t.done = 0 AND t.cleared = 0 GROUP BY l.id", null);
+        Cursor cursor = db.rawQuery("SELECT l.id id, l.list list, l.cleared cleared, COUNT(t.id) tasks FROM lists l LEFT JOIN tasks t ON l.id = t.list AND t.done = 0 GROUP BY l.id", null);
         while (cursor.moveToNext()) {
             if (cursor.getInt(cursor.getColumnIndex("cleared")) == 0) {
                 int id = cursor.getInt(cursor.getColumnIndex("id"));
@@ -42,10 +41,77 @@ public class Persistence {
         return lists;
     }
 
+    public ArrayList<Integer> getListsOrder() {
+        ArrayList<Integer> order = null;
+        SQLiteDatabase db = new SqlHelper(mContext).getReadableDatabase();
+        String[] columns = {"_order"};
+        Cursor cursor = db.query(SqlHelper.ORDERS_TABLE,
+                columns,
+                "list=-1",
+                null,
+                null,
+                null,
+                null);
+        if (cursor.getCount() > 0) {
+            order = new ArrayList<>();
+            cursor.moveToFirst();
+            String strOrder = cursor.getString(cursor.getColumnIndex("_order"));
+            if (strOrder.length() > 0) {
+                String[] lists = strOrder.split(",");
+                Log.i("Persistence", "Lists order " + strOrder + " size " + lists.length);
+                for (String list : lists) {
+                    order.add(Integer.parseInt(list));
+                }
+            }
+        }
+        cursor.close();
+        return order;
+    }
+
+    public boolean createListsOrder(ArrayList<Integer> order) {
+        StringBuffer buffer = new StringBuffer();
+        for (int i = 0; i < order.size(); ++i) {
+            buffer.append(order.get(i));
+            if (i < order.size() - 1) {
+                buffer.append(',');
+            }
+        }
+        Date today = new Date();
+        ContentValues entry = new ContentValues();
+        entry.put("list", -1);
+        entry.put("_order", buffer.toString());
+        entry.put("created", today.getTime());
+        entry.put("modified", today.getTime());
+        SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
+        long id = db.insert(SqlHelper.ORDERS_TABLE, null, entry);
+        if (id > -1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean updateListsOrder(ArrayList<Integer> order) {
+        StringBuffer buffer = new StringBuffer();
+        for (int i = 0; i < order.size(); ++i) {
+            buffer.append(order.get(i));
+            if (i < order.size() - 1) {
+                buffer.append(',');
+            }
+        }
+        Date today = new Date();
+        ContentValues entry = new ContentValues();
+        entry.put("_order", buffer.toString());
+        entry.put("modified", today.getTime());
+        SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
+        int rows = db.update(SqlHelper.ORDERS_TABLE, entry, "list=-1", null);
+        return rows > 0;
+    }
+
     public ArrayList<Task> getTasksWithAlarm() {
         ArrayList<Task> tasks = new ArrayList<>();
         SQLiteDatabase db = new SqlHelper(mContext).getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT t.id id, l.list list, t.task task, t.notification notification FROM tasks t JOIN lists l ON t.list = l.id AND t.alarm = 1 AND t.done = 0 AND t.cleared = 0", null);
+        Cursor cursor = db.rawQuery("SELECT t.id id, l.list list, t.task task, t.notification notification FROM tasks t JOIN lists l ON t.list = l.id AND t.alarm = 1 AND t.done = 0", null);
         while (cursor.moveToNext()) {
             long notification = cursor.getLong(cursor.getColumnIndex("notification"));
             Date today = new Date();
@@ -61,13 +127,11 @@ public class Persistence {
         return tasks;
     }
 
-    // TODO: find a way to order by order and done in sqlite for Android
     public ArrayList<Task> getTasksForList(int list) {
         ArrayList<Task> tasks = new ArrayList<>();
         SQLiteDatabase db = new SqlHelper(mContext).getReadableDatabase();
         String[] columns = {"id", "task", "description", "done", "alarm", "notification", "created"};
-        String[] args = new String[1];
-        args[0] = Integer.toString(list);
+        String[] args = new String[]{Integer.toString(list)};
         Cursor cursor = db.query(SqlHelper.TASKS_TABLE,
                 columns,
                 "list=? AND cleared=0",
@@ -92,6 +156,71 @@ public class Persistence {
         return tasks;
     }
 
+    public ArrayList<Integer> getListOrder(int list) {
+        ArrayList<Integer> order = null;
+        SQLiteDatabase db = new SqlHelper(mContext).getReadableDatabase();
+        String[] columns = {"_order"};
+        String[] args = new String[]{Integer.toString(list)};
+        Cursor cursor = db.query(SqlHelper.ORDERS_TABLE,
+                columns,
+                "list=?",
+                args,
+                null,
+                null,
+                null);
+        if (cursor.getCount() > 0) {
+            order = new ArrayList<>();
+            cursor.moveToFirst();
+            String strOrder = cursor.getString(cursor.getColumnIndex("order"));
+            String[] lists = strOrder.split(",");
+            for (String tList : lists) {
+                order.add(Integer.parseInt(tList));
+            }
+        }
+        cursor.close();
+        return order;
+    }
+
+    public boolean createListOrder(int list, ArrayList<Integer> order) {
+        StringBuffer buffer = new StringBuffer();
+        for (int i = 0; i < order.size(); ++i) {
+            buffer.append(order.get(i));
+            if (i < order.size() - 1) {
+                buffer.append(',');
+            }
+        }
+        Date today = new Date();
+        ContentValues entry = new ContentValues();
+        entry.put("list", list);
+        entry.put("_order", buffer.toString());
+        entry.put("created", today.getTime());
+        entry.put("modified", today.getTime());
+        SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
+        long id = db.insert(SqlHelper.ORDERS_TABLE, null, entry);
+        if (id > -1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean updateListOrder(int list, ArrayList<Integer> order) {
+        StringBuffer buffer = new StringBuffer();
+        for (int i = 0; i < order.size(); ++i) {
+            buffer.append(order.get(i));
+            if (i < order.size() - 1) {
+                buffer.append(',');
+            }
+        }
+        Date today = new Date();
+        ContentValues entry = new ContentValues();
+        entry.put("_order", buffer.toString());
+        entry.put("modified", today.getTime());
+        SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
+        int rows = db.update(SqlHelper.ORDERS_TABLE, entry, "list=?", new String[]{Integer.toString(list)});
+        return rows > 0;
+    }
+
     public List createNewList(String name) {
         List list = null;
         SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
@@ -109,7 +238,6 @@ public class Persistence {
         }
         return list;
     }
-
 
     public Task createNewTask(String name, int list) {
         Task task = null;
@@ -155,45 +283,11 @@ public class Persistence {
         }
     }
 
-    public boolean updateListPosition(int list, int prev, int next) {
-        SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
-        Date today = new Date();
-        ContentValues entry = new ContentValues();
-        entry.put("prev", prev);
-        entry.put("next", next);
-        entry.put("modified", today.getTime());
-        String[] args = new String[1];
-        args[0] = Integer.toString(list);
-        int rows = db.update(SqlHelper.LISTS_TABLE, entry, "id=?", args);
-        if (rows > 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     public boolean updateTaskName(int task, String name) {
         SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
         Date today = new Date();
         ContentValues entry = new ContentValues();
         entry.put("task", name);
-        entry.put("modified", today.getTime());
-        String[] args = new String[1];
-        args[0] = Integer.toString(task);
-        int rows = db.update(SqlHelper.TASKS_TABLE, entry, "id=?", args);
-        if (rows > 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean updateTaskPosition(int task, int prev, int next) {
-        SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
-        Date today = new Date();
-        ContentValues entry = new ContentValues();
-        entry.put("prev", prev);
-        entry.put("next", next);
         entry.put("modified", today.getTime());
         String[] args = new String[1];
         args[0] = Integer.toString(task);

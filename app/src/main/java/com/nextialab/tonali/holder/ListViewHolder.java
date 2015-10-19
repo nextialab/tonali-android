@@ -74,6 +74,7 @@ public class ListViewHolder extends RecyclerView.ViewHolder implements View.OnTo
     @Override
     public void onItemClear() {
         mView.findViewById(R.id.list_container).setBackgroundColor(0);
+        mListsAdapter.saveOrder();
     }
 
     class GestureListener extends GestureDetector.SimpleOnGestureListener {
