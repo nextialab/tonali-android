@@ -16,6 +16,7 @@ import com.nextialab.tonali.adapter.ListsAdapter;
 import com.nextialab.tonali.fragment.ListsFragment;
 import com.nextialab.tonali.model.List;
 import com.nextialab.tonali.model.Task;
+import com.nextialab.tonali.support.ItemTouchHelperCallback;
 import com.nextialab.tonali.support.Persistence;
 import com.nextialab.tonali.support.TonaliAlarmManager;
 
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 /**
  * Created by Nelson on 9/20/2015.
  */
-public class ListViewHolder extends RecyclerView.ViewHolder implements View.OnTouchListener {
+public class ListViewHolder extends RecyclerView.ViewHolder implements View.OnTouchListener, ItemTouchHelperCallback.StateListener {
 
     public View mView;
     private List mList;
@@ -65,6 +66,16 @@ public class ListViewHolder extends RecyclerView.ViewHolder implements View.OnTo
         return mGestureDetectorCompat.onTouchEvent(event);
     }
 
+    @Override
+    public void onItemSelected() {
+        mView.findViewById(R.id.list_container).setBackgroundColor(mView.getContext().getResources().getColor(R.color.md_gray_100));
+    }
+
+    @Override
+    public void onItemClear() {
+        mView.findViewById(R.id.list_container).setBackgroundColor(0);
+    }
+
     class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
         @Override
@@ -78,14 +89,14 @@ public class ListViewHolder extends RecyclerView.ViewHolder implements View.OnTo
             return true;
         }
 
-        @Override
+        /*@Override
         public void onLongPress(MotionEvent e) {
             PopupMenu menu = new PopupMenu(mListsFragment.getActivity(), mView);
             menu.setOnMenuItemClickListener(mOnMenuItemClickListener);
             MenuInflater inflater = menu.getMenuInflater();
             inflater.inflate(R.menu.menu_list, menu.getMenu());
             menu.show();
-        }
+        }*/
 
     }
 

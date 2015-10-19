@@ -27,7 +27,7 @@ public class Persistence {
     public ArrayList<List> getListsWithCount() {
         ArrayList<List> lists = new ArrayList<>();
         SQLiteDatabase db = new SqlHelper(mContext).getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT l.id id, l.list list, l.cleared cleared, COUNT(t.id) tasks FROM lists l LEFT JOIN tasks t ON l.id = t.list AND t.done = 0 AND t.cleared = 0 GROUP BY l.id ORDER BY l.created DESC", null);
+        Cursor cursor = db.rawQuery("SELECT l.id id, l.list list, l.cleared cleared, COUNT(t.id) tasks FROM lists l LEFT JOIN tasks t ON l.id = t.list AND t.done = 0 AND t.cleared = 0 GROUP BY l.id", null);
         while (cursor.moveToNext()) {
             if (cursor.getInt(cursor.getColumnIndex("cleared")) == 0) {
                 int id = cursor.getInt(cursor.getColumnIndex("id"));
@@ -64,7 +64,6 @@ public class Persistence {
     // TODO: find a way to order by order and done in sqlite for Android
     public ArrayList<Task> getTasksForList(int list) {
         ArrayList<Task> tasks = new ArrayList<>();
-        ArrayList<Task> tasksDone = new ArrayList<>();
         SQLiteDatabase db = new SqlHelper(mContext).getReadableDatabase();
         String[] columns = {"id", "task", "description", "done", "alarm", "notification", "created"};
         String[] args = new String[1];
@@ -87,13 +86,8 @@ public class Persistence {
             task.setAlarm(alarm > 0);
             task.setNotification(new Date(cursor.getLong(cursor.getColumnIndex("notification"))));
             task.setCreated(new Date(cursor.getLong(cursor.getColumnIndex("created"))));
-            if (task.isDone()) {
-                tasksDone.add(task);
-            } else {
-                tasks.add(task);
-            }
+            tasks.add(task);
         }
-        tasks.addAll(tasksDone);
         cursor.close();
         return tasks;
     }
@@ -161,11 +155,45 @@ public class Persistence {
         }
     }
 
+    public boolean updateListPosition(int list, int prev, int next) {
+        SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
+        Date today = new Date();
+        ContentValues entry = new ContentValues();
+        entry.put("prev", prev);
+        entry.put("next", next);
+        entry.put("modified", today.getTime());
+        String[] args = new String[1];
+        args[0] = Integer.toString(list);
+        int rows = db.update(SqlHelper.LISTS_TABLE, entry, "id=?", args);
+        if (rows > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public boolean updateTaskName(int task, String name) {
         SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
         Date today = new Date();
         ContentValues entry = new ContentValues();
         entry.put("task", name);
+        entry.put("modified", today.getTime());
+        String[] args = new String[1];
+        args[0] = Integer.toString(task);
+        int rows = db.update(SqlHelper.TASKS_TABLE, entry, "id=?", args);
+        if (rows > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean updateTaskPosition(int task, int prev, int next) {
+        SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
+        Date today = new Date();
+        ContentValues entry = new ContentValues();
+        entry.put("prev", prev);
+        entry.put("next", next);
         entry.put("modified", today.getTime());
         String[] args = new String[1];
         args[0] = Integer.toString(task);

@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,6 +24,7 @@ import com.nextialab.tonali.R;
 import com.nextialab.tonali.adapter.ListsAdapter;
 import com.nextialab.tonali.model.List;
 import com.nextialab.tonali.support.ActivityListener;
+import com.nextialab.tonali.support.ItemTouchHelperCallback;
 import com.nextialab.tonali.support.Persistence;
 
 import java.util.ArrayList;
@@ -41,7 +43,7 @@ public class ListsFragment extends Fragment {
     }
 
     @Override
-    public void onAttach (Activity activity) {
+    public void onAttach (Context activity) {
         super.onAttach(activity);
         mPersistence = new Persistence(activity);
         mAdapter.setPersistence(mPersistence);
@@ -57,6 +59,10 @@ public class ListsFragment extends Fragment {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recycler.setLayoutManager(layoutManager);
         recycler.setAdapter(mAdapter);
+        ItemTouchHelperCallback callback = new ItemTouchHelperCallback();
+        callback.setListener(mAdapter);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
+        itemTouchHelper.attachToRecyclerView(recycler);
         loadLists();
         return view;
     }

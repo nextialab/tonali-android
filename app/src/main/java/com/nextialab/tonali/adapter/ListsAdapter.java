@@ -14,6 +14,7 @@ import com.nextialab.tonali.R;
 import com.nextialab.tonali.fragment.ListsFragment;
 import com.nextialab.tonali.holder.ListViewHolder;
 import com.nextialab.tonali.model.List;
+import com.nextialab.tonali.support.ItemTouchHelperCallback;
 import com.nextialab.tonali.support.Persistence;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 /**
  * Created by nigonzalez on 7/7/15.
  */
-public class ListsAdapter extends RecyclerView.Adapter<ListViewHolder> {
+public class ListsAdapter extends RecyclerView.Adapter<ListViewHolder> implements ItemTouchHelperCallback.Listener {
 
     private ArrayList<List> mLists = new ArrayList<>();
     private ListsFragment mListsFragment;
@@ -72,4 +73,8 @@ public class ListsAdapter extends RecyclerView.Adapter<ListViewHolder> {
         return mLists.size();
     }
 
+    @Override
+    public void onMove(int start, int end) {
+        notifyItemMoved(start, end);
+    }
 }

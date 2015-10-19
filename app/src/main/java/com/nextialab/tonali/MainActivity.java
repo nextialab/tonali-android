@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
+        //Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.home_toolbar);
         mFloatingActionButton = (FloatingActionButton) findViewById(R.id.floating_button);
