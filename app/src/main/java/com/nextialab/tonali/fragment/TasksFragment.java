@@ -1,6 +1,7 @@
 package com.nextialab.tonali.fragment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
@@ -9,6 +10,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +23,7 @@ import com.nextialab.tonali.adapter.TasksAdapter;
 import com.nextialab.tonali.model.List;
 import com.nextialab.tonali.model.Task;
 import com.nextialab.tonali.support.ActivityListener;
+import com.nextialab.tonali.support.ItemTouchHelperCallback;
 import com.nextialab.tonali.support.Persistence;
 
 import java.util.ArrayList;
@@ -43,7 +46,7 @@ public class TasksFragment extends Fragment {
     }
 
     @Override
-    public void onAttach (Activity activity) {
+    public void onAttach (Context activity) {
         super.onAttach(activity);
         mPersistence = new Persistence(activity);
         mAdapter.setPersistence(mPersistence);
@@ -62,13 +65,48 @@ public class TasksFragment extends Fragment {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recycler.setLayoutManager(layoutManager);
         recycler.setAdapter(mAdapter);
+        ItemTouchHelperCallback callback = new ItemTouchHelperCallback();
+        callback.setListener(mAdapter);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
+        itemTouchHelper.attachToRecyclerView(recycler);
         loadTasks();
         return view;
     }
 
     public void loadTasks() {
-        ArrayList<Task> lists = mPersistence.getTasksForList(mList.getId());
-        mAdapter.setLists(lists);
+        ArrayList<Task> tasks = mPersistence.getTasksForList(mList.getId());
+        ArrayList<Integer> order = mPersistence.getListOrder(mList.getId());
+        ArrayList<Task> orderedTasks = new ArrayList<>();
+        if (order != null) {
+            for (Integer id : order) {
+                Task toAdd = null;
+                for (Task task : tasks) {
+                    if (task.getId() == id) {
+                        toAdd = task;
+                        break;
+                    }
+                }
+                if (toAdd != null) orderedTasks.add(toAdd);
+            }
+            mAdapter.setLists(orderedTasks, order, mList.getId());
+        } else {
+            order = new ArrayList<>();
+            ArrayList<Task> done = new ArrayList<>();
+            for (Task task : tasks) {
+                if (task.isDone()) {
+                    done.add(task);
+                } else {
+                    orderedTasks.add(task);
+                    order.add(task.getId());
+                }
+            }
+            for (Task task : done) {
+                orderedTasks.add(task);
+                order.add(task.getId());
+            }
+            mPersistence.createListOrder(mList.getId(), order);
+            mAdapter.setLists(orderedTasks, order, mList.getId());
+        }
     }
 
     private void onNewTask(String taskName) {

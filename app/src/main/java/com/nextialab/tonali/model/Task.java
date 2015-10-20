@@ -13,6 +13,7 @@ public class Task implements Comparable<Task>, Parcelable {
     private int mId;
     private String mTask;
     private String mList;
+    private int mListId;
     private String mDescription;
     private boolean mDone;
     private boolean mAlarm;
@@ -27,6 +28,7 @@ public class Task implements Comparable<Task>, Parcelable {
         mId = in.readInt();
         mTask = in.readString();
         mList = in.readString();
+        mListId = in.readInt();
         mDescription = in.readString();
         mAlarm = in.readInt() > 0;
         mNotification = new Date(in.readLong());
@@ -66,6 +68,14 @@ public class Task implements Comparable<Task>, Parcelable {
 
     public void setList(String list) {
         mList = list;
+    }
+
+    public int getListId() {
+        return mListId;
+    }
+
+    public void setListId(int listId) {
+        mListId = listId;
     }
 
     public String getDescription() {
@@ -133,6 +143,7 @@ public class Task implements Comparable<Task>, Parcelable {
         dest.writeInt(mId);
         dest.writeString(mTask);
         dest.writeString(mList);
+        dest.writeInt(mListId);
         dest.writeString(mDescription);
         dest.writeInt(mAlarm ? 1 : 0);
         dest.writeLong(mNotification.getTime());

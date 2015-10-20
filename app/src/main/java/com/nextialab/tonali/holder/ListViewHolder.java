@@ -90,14 +90,15 @@ public class ListViewHolder extends RecyclerView.ViewHolder implements View.OnTo
             return true;
         }
 
-        /*@Override
-        public void onLongPress(MotionEvent e) {
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
             PopupMenu menu = new PopupMenu(mListsFragment.getActivity(), mView);
             menu.setOnMenuItemClickListener(mOnMenuItemClickListener);
             MenuInflater inflater = menu.getMenuInflater();
             inflater.inflate(R.menu.menu_list, menu.getMenu());
             menu.show();
-        }*/
+            return true;
+        }
 
     }
 

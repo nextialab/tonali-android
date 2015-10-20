@@ -17,13 +17,14 @@ import com.nextialab.tonali.R;
 import com.nextialab.tonali.adapter.TasksAdapter;
 import com.nextialab.tonali.fragment.TasksFragment;
 import com.nextialab.tonali.model.Task;
+import com.nextialab.tonali.support.ItemTouchHelperCallback;
 import com.nextialab.tonali.support.Persistence;
 import com.nextialab.tonali.support.TonaliAlarmManager;
 
 /**
  * Created by Nelson on 9/8/2015.
  */
-public class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnTouchListener {
+public class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnTouchListener, ItemTouchHelperCallback.StateListener {
 
     private View mView;
     private Task mTask;
@@ -54,10 +55,21 @@ public class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnTo
         }
     };
 
+    @Override
+    public void onItemSelected() {
+        mView.findViewById(R.id.task_container).setBackgroundColor(mView.getContext().getResources().getColor(R.color.md_gray_100));
+    }
+
+    @Override
+    public void onItemClear() {
+        mView.findViewById(R.id.task_container).setBackgroundColor(0);
+        mTasksAdapter.saveOrder();
+    }
+
     class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
-        private static final int SWIPE_THRESHOLD = 100;
-        private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+        private static final int SWIPE_THRESHOLD = 75;
+        private static final int SWIPE_VELOCITY_THRESHOLD = 75;
 
         @Override
         public boolean onDown(MotionEvent e) {
@@ -87,12 +99,13 @@ public class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnTo
         }
 
         @Override
-        public void onLongPress(MotionEvent e) {
+        public boolean onDoubleTap(MotionEvent e) {
             PopupMenu menu = new PopupMenu(mTasksFragment.getActivity(), mView);
             menu.setOnMenuItemClickListener(mOnMenuItemClickListener);
             MenuInflater inflater = menu.getMenuInflater();
             inflater.inflate(R.menu.menu_task, menu.getMenu());
             menu.show();
+            return true;
         }
 
         private void onSwipeRight() {
@@ -113,11 +126,6 @@ public class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnTo
             } else {
                 Log.e("TaskAdapter", "Could not set task as done");
             }
-        }
-
-        private void onSwipeLeft() {
-            Log.i("TaskAdapter", "Swipe left");
-
         }
 
     }

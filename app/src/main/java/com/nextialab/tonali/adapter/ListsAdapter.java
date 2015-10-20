@@ -39,12 +39,6 @@ public class ListsAdapter extends RecyclerView.Adapter<ListViewHolder> implement
         mPersistence = persistence;
     }
 
-    @Deprecated
-    public void setLists(ArrayList<List> data) {
-        mLists = data;
-        notifyDataSetChanged();
-    }
-
     public void setLists(ArrayList<List> data, ArrayList<Integer> order) {
         mLists = data;
         mOrder = order;

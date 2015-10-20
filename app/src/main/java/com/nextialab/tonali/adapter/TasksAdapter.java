@@ -16,18 +16,22 @@ import com.nextialab.tonali.R;
 import com.nextialab.tonali.fragment.TasksFragment;
 import com.nextialab.tonali.holder.TaskViewHolder;
 import com.nextialab.tonali.model.Task;
+import com.nextialab.tonali.support.ItemTouchHelperCallback;
 import com.nextialab.tonali.support.Persistence;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by nigonzalez on 7/11/15.
  */
-public class TasksAdapter extends RecyclerView.Adapter<TaskViewHolder> {
+public class TasksAdapter extends RecyclerView.Adapter<TaskViewHolder> implements ItemTouchHelperCallback.Listener {
 
     private ArrayList<Task> mTasks = new ArrayList<>();
+    private ArrayList<Integer> mOrder = new ArrayList<>();
     private Persistence mPersistence;
     private TasksFragment mTasksFragment;
+    private int mListId = -1;
 
     public TasksAdapter(TasksFragment tasksFragment) {
         mTasksFragment = tasksFragment;
@@ -37,35 +41,53 @@ public class TasksAdapter extends RecyclerView.Adapter<TaskViewHolder> {
         mPersistence = persistence;
     }
 
-    public void setLists(ArrayList<Task> data) {
-        mTasks = data;
+    public void setLists(ArrayList<Task> tasks, ArrayList<Integer> order, int listId) {
+        mTasks = tasks;
+        mOrder = order;
+        mListId = listId;
         notifyDataSetChanged();
     }
 
     public void addTask(Task task, int position) {
         mTasks.add(position, task);
+        mOrder.add(position, task.getId());
+        mPersistence.updateListOrder(mListId, mOrder);
         notifyItemInserted(position);
     }
 
     public void removeTask(Task task) {
         int position = mTasks.indexOf(task);
         mTasks.remove(position);
+        mOrder.remove(position);
+        mPersistence.updateListOrder(mListId, mOrder);
         notifyItemRemoved(position);
     }
 
     public void updateTask(Task task) {
         int oldPosition = mTasks.indexOf(task);
-        mTasks.remove(oldPosition);
-        int newPosition = 0;
-        for (Task mTask : mTasks) {
-            if (mTask.compareTo(task) > 0) {
-                break;
-            } else {
-                newPosition++;
+        Log.i("TasksAdapter", "Positions 0 " + oldPosition + " " + mTasks.size());
+        if (task.isDone()) {
+            if (oldPosition != mTasks.size() - 1) {
+                mTasks.remove(oldPosition);
+                mTasks.add(task);
+                mOrder.remove(oldPosition);
+                mOrder.add(task.getId());
+                notifyItemMoved(oldPosition, mTasks.size() - 1);
+            }
+        } else {
+            if (oldPosition != 0) {
+                mTasks.remove(oldPosition);
+                mTasks.add(0, task);
+                mOrder.remove(oldPosition);
+                mOrder.add(0, task.getId());
+                notifyItemMoved(oldPosition, 0);
             }
         }
-        mTasks.add(newPosition, task);
-        notifyItemMoved(oldPosition, newPosition);
+        saveOrder();
+    }
+
+    public void saveOrder() {
+        mPersistence.updateListOrder(mListId, mOrder);
     }
 
     @Override
@@ -96,4 +118,10 @@ public class TasksAdapter extends RecyclerView.Adapter<TaskViewHolder> {
         return mTasks.size();
     }
 
+    @Override
+    public void onMove(int start, int end) {
+        Collections.swap(mTasks, start, end);
+        Collections.swap(mOrder, start, end);
+        notifyItemMoved(start, end);
+    }
 }

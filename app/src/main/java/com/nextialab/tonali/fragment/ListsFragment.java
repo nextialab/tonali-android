@@ -69,14 +69,8 @@ public class ListsFragment extends Fragment {
 
     private void loadLists() {
         ArrayList<List> lists = mPersistence.getListsWithCount();
-        /*ArrayList<Integer> order = new ArrayList<>();
-        for (List list : lists) {
-            order.add(list.getId());
-        }
-        mPersistence.updateListsOrder(order);*/
         ArrayList<Integer> order = mPersistence.getListsOrder();
         if (order != null) {
-            Log.i("Lists", "Order already created");
             ArrayList<List> orderedLists = new ArrayList<>();
             for (Integer id : order) {
                 List toAdd = null;
@@ -91,7 +85,6 @@ public class ListsFragment extends Fragment {
             mAdapter.setLists(orderedLists, order);
 
         } else {
-            Log.i("Lists", "Creating order entry");
             order = new ArrayList<>();
             for (List list : lists) {
                 order.add(list.getId());

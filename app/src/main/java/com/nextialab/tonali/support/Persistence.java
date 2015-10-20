@@ -38,6 +38,7 @@ public class Persistence {
             }
         }
         cursor.close();
+        db.close();
         return lists;
     }
 
@@ -65,6 +66,7 @@ public class Persistence {
             }
         }
         cursor.close();
+        db.close();
         return order;
     }
 
@@ -84,6 +86,7 @@ public class Persistence {
         entry.put("modified", today.getTime());
         SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
         long id = db.insert(SqlHelper.ORDERS_TABLE, null, entry);
+        db.close();
         if (id > -1) {
             return true;
         } else {
@@ -105,6 +108,7 @@ public class Persistence {
         entry.put("modified", today.getTime());
         SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
         int rows = db.update(SqlHelper.ORDERS_TABLE, entry, "list=-1", null);
+        db.close();
         return rows > 0;
     }
 
@@ -124,6 +128,7 @@ public class Persistence {
                 tasks.add(task);
             }
         }
+        db.close();
         return tasks;
     }
 
@@ -143,6 +148,7 @@ public class Persistence {
             Task task = new Task();
             task.setId(cursor.getInt(cursor.getColumnIndex("id")));
             task.setTask(cursor.getString(cursor.getColumnIndex("task")));
+            task.setListId(list);
             task.setDescription(cursor.getString(cursor.getColumnIndex("description")));
             int done = cursor.getInt(cursor.getColumnIndex("done"));
             task.setDone(done > 0);
@@ -153,6 +159,7 @@ public class Persistence {
             tasks.add(task);
         }
         cursor.close();
+        db.close();
         return tasks;
     }
 
@@ -171,13 +178,16 @@ public class Persistence {
         if (cursor.getCount() > 0) {
             order = new ArrayList<>();
             cursor.moveToFirst();
-            String strOrder = cursor.getString(cursor.getColumnIndex("order"));
-            String[] lists = strOrder.split(",");
-            for (String tList : lists) {
-                order.add(Integer.parseInt(tList));
+            String strOrder = cursor.getString(cursor.getColumnIndex("_order"));
+            if (strOrder.length() > 0) {
+                String[] lists = strOrder.split(",");
+                for (String tList : lists) {
+                    order.add(Integer.parseInt(tList));
+                }
             }
         }
         cursor.close();
+        db.close();
         return order;
     }
 
@@ -197,6 +207,7 @@ public class Persistence {
         entry.put("modified", today.getTime());
         SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
         long id = db.insert(SqlHelper.ORDERS_TABLE, null, entry);
+        db.close();
         if (id > -1) {
             return true;
         } else {
@@ -218,6 +229,7 @@ public class Persistence {
         entry.put("modified", today.getTime());
         SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
         int rows = db.update(SqlHelper.ORDERS_TABLE, entry, "list=?", new String[]{Integer.toString(list)});
+        db.close();
         return rows > 0;
     }
 
@@ -236,6 +248,7 @@ public class Persistence {
             list = new List(name, (int)id);
             list.setTasksCounter(0);
         }
+        db.close();
         return list;
     }
 
@@ -258,12 +271,14 @@ public class Persistence {
             task = new Task();
             task.setId((int)id);
             task.setTask(name);
+            task.setListId(list);
             task.setDescription("");
             task.setDone(false);
             task.setAlarm(false);
             task.setNotification(new Date(0));
             task.setCreated(today);
         }
+        db.close();
         return task;
     }
 
@@ -276,6 +291,7 @@ public class Persistence {
         String[] args = new String[1];
         args[0] = Integer.toString(list);
         int rows = db.update(SqlHelper.LISTS_TABLE, entry, "id=?", args);
+        db.close();
         if (rows > 0) {
             return true;
         } else {
@@ -292,6 +308,7 @@ public class Persistence {
         String[] args = new String[1];
         args[0] = Integer.toString(task);
         int rows = db.update(SqlHelper.TASKS_TABLE, entry, "id=?", args);
+        db.close();
         if (rows > 0) {
             return true;
         } else {
@@ -308,6 +325,7 @@ public class Persistence {
         String[] args = new String[1];
         args[0] = Integer.toString(task);
         int rows = db.update(SqlHelper.TASKS_TABLE, entry, "id=?", args);
+        db.close();
         if (rows > 0) {
             return true;
         } else {
@@ -324,6 +342,7 @@ public class Persistence {
         String[] args = new String[1];
         args[0] = Integer.toString(list);
         int rows = db.update(SqlHelper.LISTS_TABLE, entry, "id=?", args);
+        db.close();
         if (rows > 0) {
             return true;
         } else {
@@ -341,6 +360,7 @@ public class Persistence {
         String[] args = new String[1];
         args[0] = Integer.toString(task);
         int rows = db.update(SqlHelper.TASKS_TABLE, entry, "id=?", args);
+        db.close();
         if (rows > 0) {
             return true;
         } else {
@@ -357,6 +377,7 @@ public class Persistence {
         String[] args = new String[1];
         args[0] = Integer.toString(task);
         int rows = db.update(SqlHelper.TASKS_TABLE, entry, "id=?", args);
+        db.close();
         if (rows > 0) {
             return true;
         } else {
@@ -373,6 +394,7 @@ public class Persistence {
         String[] args = new String[1];
         args[0] = Integer.toString(task);
         int rows = db.update(SqlHelper.TASKS_TABLE, entry, "id=?", args);
+        db.close();
         if (rows > 0) {
             return true;
         } else {
@@ -389,6 +411,7 @@ public class Persistence {
         String[] args = new String[1];
         args[0] = Integer.toString(task);
         int rows = db.update(SqlHelper.TASKS_TABLE, entry, "id=?", args);
+        db.close();
         if (rows > 0) {
             return true;
         } else {
