@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 /**
  * Created by nigonzalez on 7/11/15.
  */
+@Deprecated
 public class SqlHelper extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 4;

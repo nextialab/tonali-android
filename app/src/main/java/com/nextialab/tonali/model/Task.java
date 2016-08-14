@@ -8,6 +8,7 @@ import java.util.Date;
 /**
  * Created by nigonzalez on 7/19/15.
  */
+@Deprecated
 public class Task implements Comparable<Task>, Parcelable {
 
     private int mId;

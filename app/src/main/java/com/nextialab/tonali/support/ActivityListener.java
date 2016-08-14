@@ -1,6 +1,6 @@
 package com.nextialab.tonali.support;
 
-import com.nextialab.tonali.model.List;
+import com.nextialab.tonali.model.TonaliList;
 import com.nextialab.tonali.model.Task;
 
 /**
@@ -8,7 +8,7 @@ import com.nextialab.tonali.model.Task;
  */
 public interface ActivityListener {
 
-    void goToList(List list);
+    void goToList(TonaliList list);
     void goToTask(Task task);
 
 }

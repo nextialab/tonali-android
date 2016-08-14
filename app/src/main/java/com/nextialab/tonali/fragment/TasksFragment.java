@@ -1,10 +1,8 @@
 package com.nextialab.tonali.fragment;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -20,7 +18,7 @@ import android.widget.EditText;
 
 import com.nextialab.tonali.R;
 import com.nextialab.tonali.adapter.TasksAdapter;
-import com.nextialab.tonali.model.List;
+import com.nextialab.tonali.model.TonaliList;
 import com.nextialab.tonali.model.Task;
 import com.nextialab.tonali.support.ActivityListener;
 import com.nextialab.tonali.support.ItemTouchHelperCallback;
@@ -35,7 +33,7 @@ public class TasksFragment extends Fragment {
 
     public static final String LIST = "list";
 
-    private List mList;
+    private TonaliList mList;
 
     private TasksAdapter mAdapter = new TasksAdapter(this);
     private ActivityListener mListener = null;

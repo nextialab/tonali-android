@@ -14,7 +14,7 @@ import android.widget.PopupMenu;
 import com.nextialab.tonali.R;
 import com.nextialab.tonali.adapter.ListsAdapter;
 import com.nextialab.tonali.fragment.ListsFragment;
-import com.nextialab.tonali.model.List;
+import com.nextialab.tonali.model.TonaliList;
 import com.nextialab.tonali.model.Task;
 import com.nextialab.tonali.support.ItemTouchHelperCallback;
 import com.nextialab.tonali.support.Persistence;
@@ -28,7 +28,7 @@ import java.util.ArrayList;
 public class ListViewHolder extends RecyclerView.ViewHolder implements View.OnTouchListener, ItemTouchHelperCallback.StateListener {
 
     public View mView;
-    private List mList;
+    private TonaliList mList;
     private ListsAdapter mListsAdapter;
     private ListsFragment mListsFragment;
     private GestureDetectorCompat mGestureDetectorCompat;
@@ -110,7 +110,7 @@ public class ListViewHolder extends RecyclerView.ViewHolder implements View.OnTo
         mView.setOnTouchListener(this);
     }
 
-    public void setList(List list) {
+    public void setList(TonaliList list) {
         mList = list;
     }
 

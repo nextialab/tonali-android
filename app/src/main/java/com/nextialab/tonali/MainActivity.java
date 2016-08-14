@@ -7,23 +7,16 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.crashlytics.android.Crashlytics;
 import com.nextialab.tonali.fragment.DetailsFragment;
 import com.nextialab.tonali.fragment.ListsFragment;
 import com.nextialab.tonali.fragment.TasksFragment;
-import com.nextialab.tonali.model.List;
+import com.nextialab.tonali.model.TonaliList;
 import com.nextialab.tonali.model.Task;
 import com.nextialab.tonali.support.ActivityListener;
-import com.nextialab.tonali.support.Persistence;
-
-import java.util.ArrayList;
-
-import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity implements ActivityListener {
 
@@ -114,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
     }
 
     @Override
-    public void goToList(List list) {
+    public void goToList(TonaliList list) {
         Bundle data = new Bundle();
         data.putParcelable(TasksFragment.LIST, list);
         mTasksFragment = new TasksFragment();

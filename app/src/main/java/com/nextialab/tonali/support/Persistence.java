@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.nextialab.tonali.model.List;
+import com.nextialab.tonali.model.TonaliList;
 import com.nextialab.tonali.model.Task;
 
 import java.util.ArrayList;
@@ -23,8 +23,8 @@ public class Persistence {
         mContext = context;
     }
 
-    public ArrayList<List> getListsWithCount() {
-        ArrayList<List> lists = new ArrayList<>();
+    public ArrayList<TonaliList> getListsWithCount() {
+        ArrayList<TonaliList> lists = new ArrayList<>();
         SQLiteDatabase db = new SqlHelper(mContext).getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT l.id id, l.list list, l.cleared cleared, COUNT(t.id) tasks FROM lists l LEFT JOIN tasks t ON l.id = t.list AND t.done = 0 GROUP BY l.id", null);
         while (cursor.moveToNext()) {
@@ -32,8 +32,7 @@ public class Persistence {
                 int id = cursor.getInt(cursor.getColumnIndex("id"));
                 String listName = cursor.getString(cursor.getColumnIndex("list"));
                 int tasks = cursor.getInt(cursor.getColumnIndex("tasks"));
-                List list = new List(listName, id);
-                list.setTasksCounter(tasks);
+                TonaliList list = new TonaliList(listName, id);
                 lists.add(list);
             }
         }
@@ -233,8 +232,8 @@ public class Persistence {
         return rows > 0;
     }
 
-    public List createNewList(String name) {
-        List list = null;
+    public TonaliList createNewList(String name) {
+        TonaliList list = null;
         SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
         Date today = new Date();
         ContentValues entry = new ContentValues();
@@ -245,8 +244,7 @@ public class Persistence {
         entry.put("modified", today.getTime());
         long id = db.insert(SqlHelper.LISTS_TABLE, null, entry);
         if (id > -1) {
-            list = new List(name, (int)id);
-            list.setTasksCounter(0);
+            list = new TonaliList(name, (int)id);
         }
         db.close();
         return list;

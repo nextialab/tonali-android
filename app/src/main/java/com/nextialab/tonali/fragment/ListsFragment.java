@@ -1,10 +1,8 @@
 package com.nextialab.tonali.fragment;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,17 +10,14 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.nextialab.tonali.R;
 import com.nextialab.tonali.adapter.ListsAdapter;
-import com.nextialab.tonali.model.List;
+import com.nextialab.tonali.model.TonaliList;
 import com.nextialab.tonali.support.ActivityListener;
 import com.nextialab.tonali.support.ItemTouchHelperCallback;
 import com.nextialab.tonali.support.Persistence;
@@ -68,13 +63,13 @@ public class ListsFragment extends Fragment {
     }
 
     private void loadLists() {
-        ArrayList<List> lists = mPersistence.getListsWithCount();
+        ArrayList<TonaliList> lists = mPersistence.getListsWithCount();
         ArrayList<Integer> order = mPersistence.getListsOrder();
         if (order != null) {
-            ArrayList<List> orderedLists = new ArrayList<>();
+            ArrayList<TonaliList> orderedLists = new ArrayList<>();
             for (Integer id : order) {
-                List toAdd = null;
-                for (List list : lists) {
+                TonaliList toAdd = null;
+                for (TonaliList list : lists) {
                     if (list.getId() == id) {
                         toAdd = list;
                         break;
@@ -86,7 +81,7 @@ public class ListsFragment extends Fragment {
 
         } else {
             order = new ArrayList<>();
-            for (List list : lists) {
+            for (TonaliList list : lists) {
                 order.add(list.getId());
             }
             mPersistence.createListsOrder(order);
@@ -95,7 +90,7 @@ public class ListsFragment extends Fragment {
     }
 
     private void onNewList(String listName) {
-        List list = mPersistence.createNewList(listName);
+        TonaliList list = mPersistence.createNewList(listName);
         if (list != null) {
             mAdapter.addList(list, 0);
         } else {
@@ -103,7 +98,7 @@ public class ListsFragment extends Fragment {
         }
     }
 
-    private void onUpdateList(List list, String name) {
+    private void onUpdateList(TonaliList list, String name) {
         if (mPersistence.updateListName(list.getId(), name)) {
             list.setListName(name);
             mAdapter.notifyDataSetChanged();
@@ -142,7 +137,7 @@ public class ListsFragment extends Fragment {
         dialog.show();
     }
 
-    public void onUpdateList(final List list) {
+    public void onUpdateList(final TonaliList list) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View input = getActivity().getLayoutInflater().inflate(R.layout.dialog_list_update, null);
         final EditText editText = (EditText) input.findViewById(R.id.lists_input_update_list);
@@ -176,7 +171,7 @@ public class ListsFragment extends Fragment {
         dialog.show();
     }
 
-    public void goToList(List list) {
+    public void goToList(TonaliList list) {
         mListener.goToList(list);
     }
 
