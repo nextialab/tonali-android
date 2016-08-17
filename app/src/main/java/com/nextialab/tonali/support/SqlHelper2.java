@@ -1,5 +1,6 @@
 package com.nextialab.tonali.support;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -21,6 +22,10 @@ public class SqlHelper2 extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(ListColumns.getCreateQuery());
+        ContentValues root = new ContentValues();
+        root.put(ListColumns.NAME, "root");
+        root.put(ListColumns.PARENT, 0L);
+        db.insert(ListColumns.LIST_TABLE, null, root);
     }
 
     @Override

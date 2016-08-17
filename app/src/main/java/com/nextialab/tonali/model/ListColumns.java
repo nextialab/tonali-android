@@ -1,5 +1,7 @@
 package com.nextialab.tonali.model;
 
+import java.io.PipedReader;
+
 /**
  * Created by Nelson on 8/13/2016.
  */
@@ -12,7 +14,7 @@ public class ListColumns {
     public static final String CONTENT = "content";
     public static final String TYPE = "type";
     public static final String ORDER = "order";
-    public static final String ORDERING = "ordering";
+    public static final String SEQUENCE = "ordering";
     public static final String PRIORITY = "priority";
     public static final String CHECKED = "checked";
     public static final String ALARM = "alarm";
@@ -20,6 +22,10 @@ public class ListColumns {
     public static final String CREATED = "created";
     public static final String MODIFIED = "modified";
     public static final String SYNCED = "synced";
+
+    public static String[] getColumns() {
+        return new String[]{ID, PARENT, NAME, CONTENT, TYPE, ORDER, SEQUENCE, PRIORITY, CHECKED, ALARM, NOTIFICATION, CREATED, MODIFIED, SYNCED};
+    }
 
     public static String getCreateQuery() {
         return "CREATE TABLE " + LIST_TABLE + " (" +
@@ -29,6 +35,7 @@ public class ListColumns {
                 CONTENT + " TEXT, " +
                 TYPE + " TEXT, " +
                 ORDER + " TEXT, " +
+                SEQUENCE + " TEXT, " +
                 PRIORITY + " INTEGER, " +
                 CHECKED + " INTEGER, " +
                 ALARM + " INTEGER, " +

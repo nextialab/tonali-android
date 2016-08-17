@@ -63,30 +63,7 @@ public class ListsFragment extends Fragment {
     }
 
     private void loadLists() {
-        ArrayList<TonaliList> lists = mPersistence.getListsWithCount();
-        ArrayList<Integer> order = mPersistence.getListsOrder();
-        if (order != null) {
-            ArrayList<TonaliList> orderedLists = new ArrayList<>();
-            for (Integer id : order) {
-                TonaliList toAdd = null;
-                for (TonaliList list : lists) {
-                    if (list.getId() == id) {
-                        toAdd = list;
-                        break;
-                    }
-                }
-                if (toAdd != null) orderedLists.add(toAdd);
-            }
-            mAdapter.setLists(orderedLists, order);
 
-        } else {
-            order = new ArrayList<>();
-            for (TonaliList list : lists) {
-                order.add(list.getId());
-            }
-            mPersistence.createListsOrder(order);
-            mAdapter.setLists(lists, order);
-        }
     }
 
     private void onNewList(String listName) {
@@ -99,10 +76,7 @@ public class ListsFragment extends Fragment {
     }
 
     private void onUpdateList(TonaliList list, String name) {
-        if (mPersistence.updateListName(list.getId(), name)) {
-            list.setListName(name);
-            mAdapter.notifyDataSetChanged();
-        }
+
     }
 
     public void onNewList() {

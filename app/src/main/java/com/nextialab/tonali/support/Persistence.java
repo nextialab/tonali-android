@@ -17,12 +17,65 @@ import java.util.Date;
  */
 public class Persistence {
 
-    private Context mContext;
+    private static Persistence sInstance;
 
+    private Persistence() {
+
+    }
+
+    public static Persistence instance() {
+        if (sInstance == null) {
+            sInstance = new Persistence();
+        }
+        return sInstance;
+    }
+
+    // Instance
+
+    private Context mContext;
+    private SQLiteDatabase mDatabase;
+
+    public void setContext(Context context) {
+        mContext = context;
+    }
+
+    public void beginTransaction() {
+        mDatabase = new SqlHelper2(mContext).getWritableDatabase();
+    }
+
+    public void endTransaction() {
+        if (mDatabase != null) {
+            mDatabase.close();
+        }
+        mDatabase = null;
+    }
+
+    public long insert(String table, ContentValues row) {
+        return mDatabase.insert(table, null, row);
+    }
+
+    public boolean update(String table, ContentValues row, String where, String[] args) {
+        int rows = mDatabase.update(table, row, where, args);
+        return rows > 0;
+    }
+
+    public boolean delete(String table, String where, String[] args) {
+        int rows = mDatabase.delete(table, where, args);
+        return rows > 0;
+    }
+
+    public Cursor getRows(String table, String[] columns, String where, String[] args) {
+        return mDatabase.query(table, columns, where, args, null, null, null);
+    }
+
+    // Deprecated
+
+    @Deprecated
     public Persistence(Context context) {
         mContext = context;
     }
 
+    @Deprecated
     public ArrayList<TonaliList> getListsWithCount() {
         ArrayList<TonaliList> lists = new ArrayList<>();
         SQLiteDatabase db = new SqlHelper(mContext).getReadableDatabase();
@@ -41,6 +94,7 @@ public class Persistence {
         return lists;
     }
 
+    @Deprecated
     public ArrayList<Integer> getListsOrder() {
         ArrayList<Integer> order = null;
         SQLiteDatabase db = new SqlHelper(mContext).getReadableDatabase();
@@ -69,6 +123,7 @@ public class Persistence {
         return order;
     }
 
+    @Deprecated
     public boolean createListsOrder(ArrayList<Integer> order) {
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < order.size(); ++i) {
@@ -93,6 +148,7 @@ public class Persistence {
         }
     }
 
+    @Deprecated
     public boolean updateListsOrder(ArrayList<Integer> order) {
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < order.size(); ++i) {
@@ -111,6 +167,7 @@ public class Persistence {
         return rows > 0;
     }
 
+    @Deprecated
     public ArrayList<Task> getTasksWithAlarm() {
         ArrayList<Task> tasks = new ArrayList<>();
         SQLiteDatabase db = new SqlHelper(mContext).getReadableDatabase();
@@ -131,6 +188,7 @@ public class Persistence {
         return tasks;
     }
 
+    @Deprecated
     public ArrayList<Task> getTasksForList(int list) {
         ArrayList<Task> tasks = new ArrayList<>();
         SQLiteDatabase db = new SqlHelper(mContext).getReadableDatabase();
@@ -162,6 +220,7 @@ public class Persistence {
         return tasks;
     }
 
+    @Deprecated
     public ArrayList<Integer> getListOrder(int list) {
         ArrayList<Integer> order = null;
         SQLiteDatabase db = new SqlHelper(mContext).getReadableDatabase();
@@ -190,6 +249,7 @@ public class Persistence {
         return order;
     }
 
+    @Deprecated
     public boolean createListOrder(int list, ArrayList<Integer> order) {
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < order.size(); ++i) {
@@ -214,6 +274,7 @@ public class Persistence {
         }
     }
 
+    @Deprecated
     public boolean updateListOrder(int list, ArrayList<Integer> order) {
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < order.size(); ++i) {
@@ -232,6 +293,7 @@ public class Persistence {
         return rows > 0;
     }
 
+    @Deprecated
     public TonaliList createNewList(String name) {
         TonaliList list = null;
         SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
@@ -250,6 +312,7 @@ public class Persistence {
         return list;
     }
 
+    @Deprecated
     public Task createNewTask(String name, int list) {
         Task task = null;
         Date today = new Date();
@@ -280,6 +343,7 @@ public class Persistence {
         return task;
     }
 
+    @Deprecated
     public boolean updateListName(int list, String name) {
         SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
         Date today = new Date();
@@ -297,6 +361,7 @@ public class Persistence {
         }
     }
 
+    @Deprecated
     public boolean updateTaskName(int task, String name) {
         SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
         Date today = new Date();
@@ -314,6 +379,7 @@ public class Persistence {
         }
     }
 
+    @Deprecated
     public boolean setTaskDone(int task, boolean done) {
         SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
         Date today = new Date();
@@ -331,6 +397,7 @@ public class Persistence {
         }
     }
 
+    @Deprecated
     public boolean setListCleared(int list) {
         SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
         Date today = new Date();
@@ -348,6 +415,7 @@ public class Persistence {
         }
     }
 
+    @Deprecated
     public boolean setTaskCleared(int task) {
         SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
         Date today = new Date();
@@ -366,6 +434,7 @@ public class Persistence {
         }
     }
 
+    @Deprecated
     public boolean updateTaskDescription(int task, String description) {
         SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
         Date today = new Date();
@@ -383,6 +452,7 @@ public class Persistence {
         }
     }
 
+    @Deprecated
     public boolean setTaskNotification(int task, Date notification) {
         SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
         Date today = new Date();
@@ -400,6 +470,7 @@ public class Persistence {
         }
     }
 
+    @Deprecated
     public boolean setTaskAlarm(int task, boolean alarm) {
         SQLiteDatabase db = new SqlHelper(mContext).getWritableDatabase();
         Date today = new Date();

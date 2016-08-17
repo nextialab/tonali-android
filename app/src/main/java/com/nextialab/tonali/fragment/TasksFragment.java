@@ -72,48 +72,11 @@ public class TasksFragment extends Fragment {
     }
 
     public void loadTasks() {
-        ArrayList<Task> tasks = mPersistence.getTasksForList(mList.getId());
-        ArrayList<Integer> order = mPersistence.getListOrder(mList.getId());
-        ArrayList<Task> orderedTasks = new ArrayList<>();
-        if (order != null) {
-            for (Integer id : order) {
-                Task toAdd = null;
-                for (Task task : tasks) {
-                    if (task.getId() == id) {
-                        toAdd = task;
-                        break;
-                    }
-                }
-                if (toAdd != null) orderedTasks.add(toAdd);
-            }
-            mAdapter.setLists(orderedTasks, order, mList.getId());
-        } else {
-            order = new ArrayList<>();
-            ArrayList<Task> done = new ArrayList<>();
-            for (Task task : tasks) {
-                if (task.isDone()) {
-                    done.add(task);
-                } else {
-                    orderedTasks.add(task);
-                    order.add(task.getId());
-                }
-            }
-            for (Task task : done) {
-                orderedTasks.add(task);
-                order.add(task.getId());
-            }
-            mPersistence.createListOrder(mList.getId(), order);
-            mAdapter.setLists(orderedTasks, order, mList.getId());
-        }
+
     }
 
     private void onNewTask(String taskName) {
-        Task task = mPersistence.createNewTask(taskName, mList.getId());
-        if (task != null) {
-            mAdapter.addTask(task, 0);
-        } else {
-            Log.e("Tonali", "Could not create task " + taskName);
-        }
+
     }
 
     private void onUpdateTask(Task task, String name) {

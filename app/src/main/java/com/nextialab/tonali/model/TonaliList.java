@@ -1,9 +1,15 @@
 package com.nextialab.tonali.model;
 
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.nextialab.tonali.support.Persistence;
+import com.nextialab.tonali.support.Utils;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -12,12 +18,12 @@ import java.util.List;
  */
 public class TonaliList implements Parcelable {
 
-    private long mId;
+    private long mId = -1;
     private long mParent;
     private String mName;
     private String mContent;
     private ListType mType;
-    private List<Long> mSequence;
+    private List<Long> mSequence = new ArrayList<>();
     private ListOrder mOrder;
     private int mPriority;
     private boolean mChecked;
@@ -27,6 +33,11 @@ public class TonaliList implements Parcelable {
     private Date mModified;
     private Date mSynced;
 
+    public TonaliList() {
+
+    }
+
+    @Deprecated
     public TonaliList(String name, int id) {
         mId = id;
         mName = name;
@@ -197,15 +208,76 @@ public class TonaliList implements Parcelable {
     }
 
     public boolean save() {
-        return true;
+        ContentValues entry = new ContentValues();
+        entry.put(ListColumns.PARENT, mParent);
+        entry.put(ListColumns.NAME, mName);
+        entry.put(ListColumns.CONTENT, mContent);
+        entry.put(ListColumns.TYPE, mType.toString());
+        entry.put(ListColumns.SEQUENCE, Utils.makeString(",", mSequence));
+        entry.put(ListColumns.ORDER, mOrder.toString());
+        entry.put(ListColumns.PRIORITY, mPriority);
+        entry.put(ListColumns.CHECKED, (mChecked ? 1 : 0));
+        entry.put(ListColumns.ALARM, mAlarm.getTime());
+        entry.put(ListColumns.NOTIFICATION, (mNotification ? 1 : 0));
+        entry.put(ListColumns.SYNCED, mSynced.getTime());
+        Persistence.instance().beginTransaction();
+        if (mId > 0) {
+            entry.put(ListColumns.MODIFIED, (new Date()).getTime());
+            boolean result = Persistence.instance().update(ListColumns.LIST_TABLE, entry, String.format("%s=?", ListColumns.ID), new String[]{Long.toString(mId)});
+            Persistence.instance().endTransaction();
+            return result;
+        } else {
+            Date now = new Date();
+            entry.put(ListColumns.CREATED, now.getTime());
+            entry.put(ListColumns.MODIFIED, now.getTime());
+            long id = Persistence.instance().insert(ListColumns.LIST_TABLE, entry);
+            Persistence.instance().endTransaction();
+            if (id > -1) {
+                mId = id;
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
     public boolean delete() {
-        return true;
+        Persistence.instance().beginTransaction();
+        boolean result = Persistence.instance().delete(ListColumns.LIST_TABLE, String.format("%s=?", ListColumns.ID), new String[]{Long.toString(mId)});
+        if (result) {
+            mId = -1;
+        }
+        Persistence.instance().endTransaction();
+        return result;
     }
 
     public static List<TonaliList> findChildren(long parent) {
-        return new ArrayList<>();
+        List<TonaliList> children = new ArrayList<>();
+        Persistence.instance().beginTransaction();
+        Cursor cursor = Persistence.instance().getRows(ListColumns.LIST_TABLE, ListColumns.getColumns(), String.format("%s=?", ListColumns.PARENT), new String[]{Long.toString(parent)});
+        while (cursor.moveToNext()) {
+            TonaliList list = new TonaliList();
+            list.mId = cursor.getLong(cursor.getColumnIndex(ListColumns.ID));
+            list.mParent = parent;
+            list.mName = cursor.getString(cursor.getColumnIndex(ListColumns.NAME));
+            list.mContent = cursor.getString(cursor.getColumnIndex(ListColumns.CONTENT));
+            list.mType = ListType.valueOf(cursor.getString(cursor.getColumnIndex(ListColumns.TYPE)));
+            list.mOrder = ListOrder.valueOf(cursor.getString(cursor.getColumnIndex(ListColumns.ORDER)));
+            String[] sequence = cursor.getString(cursor.getColumnIndex(ListColumns.SEQUENCE)).split(",");
+            for (int i = 0; i < sequence.length; i++) {
+                list.mSequence.add(Long.parseLong(sequence[i]));
+            }
+            list.mPriority = cursor.getInt(cursor.getColumnIndex(ListColumns.PRIORITY));
+            list.mChecked = cursor.getInt(cursor.getColumnIndex(ListColumns.CHECKED)) == 1;
+            list.mAlarm = new Date(cursor.getLong(cursor.getColumnIndex(ListColumns.ALARM)));
+            list.mNotification = cursor.getInt(cursor.getColumnIndex(ListColumns.NOTIFICATION)) == 1;
+            list.mCreated = new Date(cursor.getLong(cursor.getColumnIndex(ListColumns.CREATED)));
+            list.mModified = new Date(cursor.getLong(cursor.getColumnIndex(ListColumns.MODIFIED)));
+            list.mSynced = new Date(cursor.getLong(cursor.getColumnIndex(ListColumns.SYNCED)));
+        }
+        cursor.close();
+        Persistence.instance().endTransaction();
+        return children;
     }
 
 }

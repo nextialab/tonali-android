@@ -15,14 +15,14 @@ import com.nextialab.tonali.support.Persistence;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by nigonzalez on 7/7/15.
  */
 public class ListsAdapter extends RecyclerView.Adapter<ListViewHolder> implements ItemTouchHelperCallback.Listener {
 
-    private ArrayList<TonaliList> mLists = new ArrayList<>();
-    private ArrayList<Integer> mOrder = new ArrayList<>();
+    private List<TonaliList> mLists = new ArrayList<>();
     private ListsFragment mListsFragment;
     private Persistence mPersistence;
 
@@ -34,29 +34,26 @@ public class ListsAdapter extends RecyclerView.Adapter<ListViewHolder> implement
         mPersistence = persistence;
     }
 
-    public void setLists(ArrayList<TonaliList> data, ArrayList<Integer> order) {
+    @Deprecated
+    public void setLists(List<TonaliList> data, List<Long> order) {
         mLists = data;
-        mOrder = order;
+        notifyDataSetChanged();
+    }
+
+    public void setList(List<TonaliList> lists) {
+        mLists = lists;
         notifyDataSetChanged();
     }
 
     public void addList(TonaliList list, int position) {
         mLists.add(position, list);
-        mOrder.add(position, list.getId());
-        mPersistence.updateListsOrder(mOrder);
         notifyItemInserted(position);
     }
 
     public void removeList(TonaliList list) {
         int position = mLists.indexOf(list);
         mLists.remove(position);
-        mOrder.remove(position);
-        mPersistence.updateListsOrder(mOrder);
         notifyItemRemoved(position);
-    }
-
-    public void saveOrder() {
-        mPersistence.updateListsOrder(mOrder);
     }
 
     @Override
@@ -70,7 +67,6 @@ public class ListsAdapter extends RecyclerView.Adapter<ListViewHolder> implement
     @Override
     public void onBindViewHolder(ListViewHolder holder, int position) {
         ((TextView) holder.mView.findViewById(R.id.list_name)).setText(mLists.get(position).getListName());
-        ((TextView) holder.mView.findViewById(R.id.list_tasks_counter)).setText(Integer.toString(mLists.get(position).getTasksCount()));
         holder.setList(mLists.get(position));
         holder.setListsFragment(mListsFragment);
     }
@@ -83,7 +79,6 @@ public class ListsAdapter extends RecyclerView.Adapter<ListViewHolder> implement
     @Override
     public void onMove(int start, int end) {
         Collections.swap(mLists, start, end);
-        Collections.swap(mOrder, start, end);
         notifyItemMoved(start, end);
     }
 }
