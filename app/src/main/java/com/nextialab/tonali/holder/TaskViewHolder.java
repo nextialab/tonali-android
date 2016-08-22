@@ -24,6 +24,7 @@ import com.nextialab.tonali.support.TonaliAlarmManager;
 /**
  * Created by Nelson on 9/8/2015.
  */
+@Deprecated
 public class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnTouchListener, ItemTouchHelperCallback.StateListener {
 
     private View mView;

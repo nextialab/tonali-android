@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,24 +18,14 @@ import com.nextialab.tonali.fragment.TasksFragment;
 import com.nextialab.tonali.model.TonaliList;
 import com.nextialab.tonali.model.Task;
 import com.nextialab.tonali.support.ActivityListener;
+import com.nextialab.tonali.support.ListsListener;
+
+import java.util.List;
+import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity implements ActivityListener {
 
-    public static final String GENERAL = "general";
-    public static final String GENERAL_FIRST_TIME = "firstTime";
-    public static final String EDIT_FIELD = "editField";
-
-    enum Section {
-        LISTS,
-        TASKS,
-        DETAILS
-    }
-
-    private Section mCurrentSection = Section.LISTS;
-
-    private ListsFragment mListsFragment;
-    private TasksFragment mTasksFragment;
-    private DetailsFragment mDetailsFragment;
+    private Stack<ListsListener> mListsStack = new Stack<>();
 
     private FloatingActionButton mFloatingActionButton;
 
@@ -45,14 +36,22 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
         Toolbar toolbar = (Toolbar) findViewById(R.id.home_toolbar);
         mFloatingActionButton = (FloatingActionButton) findViewById(R.id.floating_button);
         setSupportActionBar(toolbar);
-        mListsFragment = new ListsFragment();
-        getSupportFragmentManager().beginTransaction().add(R.id.main_container, mListsFragment).commit();
-        SharedPreferences prefs = getSharedPreferences(GENERAL, MODE_PRIVATE);
-        if (prefs.getBoolean(GENERAL_FIRST_TIME, true)) {
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putBoolean(GENERAL_FIRST_TIME, false);
-            editor.commit();
-            startActivity(new Intent(this, AboutActivity.class));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        List<TonaliList> lists = TonaliList.findChildren(0L);
+        if (lists.size() > 0) {
+            TonaliList root = lists.get(0);
+            Bundle args = new Bundle();
+            args.putParcelable(ListsFragment.PARENT, root);
+            ListsFragment fragment = new ListsFragment();
+            fragment.setArguments(args);
+            mListsStack.push(fragment);
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_container, fragment).commit();
+        } else {
+            Log.e("MainActivity", "Root list not found");
         }
     }
 
@@ -81,57 +80,35 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
 
     @Override
     public void onBackPressed() {
-        switch (mCurrentSection) {
-            case DETAILS:
-                mFloatingActionButton.setVisibility(View.VISIBLE);
-                mCurrentSection = Section.TASKS;
-                break;
-            case TASKS:
-                getSupportActionBar().setTitle(R.string.title_activity_home);
-                mCurrentSection = Section.LISTS;
-                break;
+        if (mListsStack.size() > 0) {
+            mListsStack.pop();
         }
         super.onBackPressed();
     }
 
     public void onFloatingButton(View view) {
-        switch (mCurrentSection) {
-        case LISTS:
-            mListsFragment.onNewList();
-            break;
-        case TASKS:
-            mTasksFragment.onNewTask();
-            break;
+        if (mListsStack.size() > 0) {
+            mListsStack.peek().onNewList();
         }
     }
 
     @Override
     public void goToList(TonaliList list) {
-        Bundle data = new Bundle();
-        data.putParcelable(TasksFragment.LIST, list);
-        mTasksFragment = new TasksFragment();
-        mTasksFragment.setArguments(data);
+        Bundle args = new Bundle();
+        args.putParcelable(ListsFragment.PARENT, list);
+        ListsFragment fragment = new ListsFragment();
+        fragment.setArguments(args);
+        mListsStack.push(fragment);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right);
-        transaction.replace(R.id.main_container, mTasksFragment);
+        transaction.replace(R.id.main_container, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
-        mCurrentSection = Section.TASKS;
     }
 
     @Override
-    public void goToTask(Task task) {
-        Bundle data = new Bundle();
-        data.putParcelable(DetailsFragment.TASK, task);
-        mDetailsFragment = new DetailsFragment();
-        mDetailsFragment.setArguments(data);
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right);
-        transaction.replace(R.id.main_container, mDetailsFragment);
-        transaction.addToBackStack(null);
-        mFloatingActionButton.setVisibility(View.INVISIBLE);
-        transaction.commit();
-        mCurrentSection = Section.DETAILS;
+    public void goToFinal(TonaliList list) {
+
     }
 
 }

@@ -29,6 +29,7 @@ import java.util.ArrayList;
 /**
  * Created by nigonzalez on 7/11/15.
  */
+@Deprecated
 public class TasksFragment extends Fragment {
 
     public static final String LIST = "list";
@@ -157,7 +158,7 @@ public class TasksFragment extends Fragment {
 
     public void goToTask(Task task) {
         task.setList(mList.getListName());
-        mListener.goToTask(task);
+        //mListener.goToTask(task);
     }
 
 }

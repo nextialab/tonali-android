@@ -6,6 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.nextialab.tonali.model.ListColumns;
+import com.nextialab.tonali.model.ListOrder;
+import com.nextialab.tonali.model.ListType;
 
 /**
  * Created by Nelson on 8/13/2016.
@@ -22,10 +24,7 @@ public class SqlHelper2 extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(ListColumns.getCreateQuery());
-        ContentValues root = new ContentValues();
-        root.put(ListColumns.NAME, "root");
-        root.put(ListColumns.PARENT, 0L);
-        db.insert(ListColumns.LIST_TABLE, null, root);
+        db.insert(ListColumns.LIST_TABLE, null, ListColumns.getRootList());
     }
 
     @Override

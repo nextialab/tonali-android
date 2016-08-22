@@ -1,47 +1,48 @@
 package com.nextialab.tonali.holder;
 
-import android.content.Context;
 import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.widget.TextViewCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.PopupMenu;
 
 import com.nextialab.tonali.R;
-import com.nextialab.tonali.adapter.ListsAdapter;
-import com.nextialab.tonali.fragment.ListsFragment;
-import com.nextialab.tonali.model.TonaliList;
-import com.nextialab.tonali.model.Task;
 import com.nextialab.tonali.support.ItemTouchHelperCallback;
-import com.nextialab.tonali.support.Persistence;
-import com.nextialab.tonali.support.TonaliAlarmManager;
-
-import java.util.ArrayList;
 
 /**
  * Created by Nelson on 9/20/2015.
  */
 public class ListViewHolder extends RecyclerView.ViewHolder implements View.OnTouchListener, ItemTouchHelperCallback.StateListener {
 
-    public View mView;
-    private TonaliList mList;
-    private ListsAdapter mListsAdapter;
-    private ListsFragment mListsFragment;
+    public interface Listener {
+
+        void onClick(int which);
+        void onRename(int which);
+        void onDelete(int which);
+        void onMark(int which, boolean state);
+
+    }
+
+    private View mView;
+    private int mPosition;
     private GestureDetectorCompat mGestureDetectorCompat;
-    private Persistence mPersistence;
+    private Listener mListener;
 
     PopupMenu.OnMenuItemClickListener mOnMenuItemClickListener = new PopupMenu.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.list_rename:
-                    mListsFragment.onUpdateList(mList);
+                    if (mListener != null) mListener.onRename(mPosition);
                     break;
                 case R.id.list_delete:
+                    if (mListener != null) mListener.onDelete(mPosition);
                     break;
             }
             return true;
@@ -72,13 +73,13 @@ public class ListViewHolder extends RecyclerView.ViewHolder implements View.OnTo
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
-            mListsFragment.goToList(mList);
+            if (mListener != null) mListener.onClick(mPosition);
             return true;
         }
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            PopupMenu menu = new PopupMenu(mListsFragment.getActivity(), mView);
+            PopupMenu menu = new PopupMenu(mView.getContext(), mView);
             menu.setOnMenuItemClickListener(mOnMenuItemClickListener);
             MenuInflater inflater = menu.getMenuInflater();
             inflater.inflate(R.menu.menu_list, menu.getMenu());
@@ -88,24 +89,38 @@ public class ListViewHolder extends RecyclerView.ViewHolder implements View.OnTo
 
     }
 
-    public ListViewHolder(Context context, Persistence persistence, View itemView) {
+    public CompoundButton.OnCheckedChangeListener mOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if (mListener != null) mListener.onMark(mPosition, isChecked);
+        }
+    };
+
+    public ListViewHolder(View itemView) {
         super(itemView);
-        mPersistence = persistence;
         mView = itemView;
-        mGestureDetectorCompat = new GestureDetectorCompat(context, new GestureListener());
+        mGestureDetectorCompat = new GestureDetectorCompat(mView.getContext(), new GestureListener());
         mView.setOnTouchListener(this);
+        ((CheckBox) mView.findViewById(R.id.list_checkbox)).setOnCheckedChangeListener(mOnCheckedChangeListener);
     }
 
-    public void setList(TonaliList list) {
-        mList = list;
+    public void setChecked(boolean state) {
+        CheckBox checkbox = (CheckBox) mView.findViewById(R.id.list_checkbox);
+        checkbox.setOnCheckedChangeListener(null);
+        checkbox.setChecked(state);
+        checkbox.setOnCheckedChangeListener(mOnCheckedChangeListener);
     }
 
-    public void setListsAdapter(ListsAdapter listAdapter) {
-        mListsAdapter = listAdapter;
+    public View getView() {
+        return mView;
     }
 
-    public void setListsFragment(ListsFragment listsFragment) {
-        mListsFragment = listsFragment;
+    public void setListener(Listener listener) {
+        mListener = listener;
+    }
+
+    public void setPosition(int position) {
+        mPosition = position;
     }
 
 }

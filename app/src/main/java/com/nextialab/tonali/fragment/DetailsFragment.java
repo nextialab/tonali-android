@@ -184,7 +184,6 @@ public class DetailsFragment extends Fragment {
 
     private void onEditDescription() {
         Intent intent = new Intent(getActivity(), EditActivity.class);
-        intent.putExtra(MainActivity.EDIT_FIELD, mTask.getDescription());
         startActivityForResult(intent, REQUEST_CODE);
     }
 
@@ -192,23 +191,6 @@ public class DetailsFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case REQUEST_CODE:
-                if (resultCode == Activity.RESULT_OK) {
-                    String description = data.getStringExtra(MainActivity.EDIT_FIELD);
-                    if (mPersistence.updateTaskDescription(mTask.getId(), description)) {
-                        mTask.setDescription(description);
-                        if (description.length() > 0) {
-                            mDescription.setText(description);
-                            mDescription.setTextColor(getResources().getColor(R.color.tonali_black));
-                        } else {
-                            mDescription.setText(R.string.description_placeholder);
-                            mDescription.setTextColor(getResources().getColor(R.color.tonali_gray));
-                        }
-                    } else {
-                        Log.e("Details", "Could not update task description");
-                    }
-                }
-                break;
         }
     }
 

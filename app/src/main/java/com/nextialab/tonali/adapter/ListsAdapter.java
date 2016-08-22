@@ -1,5 +1,6 @@
 package com.nextialab.tonali.adapter;
 
+import android.graphics.Paint;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,22 +23,17 @@ import java.util.List;
  */
 public class ListsAdapter extends RecyclerView.Adapter<ListViewHolder> implements ItemTouchHelperCallback.Listener {
 
+    public interface Listener extends ListViewHolder.Listener {
+
+        void onSwap(int from, int to);
+
+    }
+
     private List<TonaliList> mLists = new ArrayList<>();
-    private ListsFragment mListsFragment;
-    private Persistence mPersistence;
+    private Listener mListener;
 
-    public ListsAdapter(ListsFragment listsFragment) {
-        mListsFragment = listsFragment;
-    }
-
-    public void setPersistence(Persistence persistence) {
-        mPersistence = persistence;
-    }
-
-    @Deprecated
-    public void setLists(List<TonaliList> data, List<Long> order) {
-        mLists = data;
-        notifyDataSetChanged();
+    public void setListener(Listener listener) {
+        mListener = listener;
     }
 
     public void setList(List<TonaliList> lists) {
@@ -56,19 +52,32 @@ public class ListsAdapter extends RecyclerView.Adapter<ListViewHolder> implement
         notifyItemRemoved(position);
     }
 
+    public TonaliList getItemAtPosition(int position) {
+        return mLists.get(position);
+    }
+
     @Override
     public ListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_list, parent, false);
-        ListViewHolder vh = new ListViewHolder(parent.getContext(), mPersistence, view);
-        vh.setListsAdapter(this);
+        ListViewHolder vh = new ListViewHolder(view);
+        vh.setListener(mListener);
         return vh;
     }
 
     @Override
     public void onBindViewHolder(ListViewHolder holder, int position) {
-        ((TextView) holder.mView.findViewById(R.id.list_name)).setText(mLists.get(position).getListName());
-        holder.setList(mLists.get(position));
-        holder.setListsFragment(mListsFragment);
+        holder.setPosition(position);
+        TonaliList list = mLists.get(position);
+        TextView name = (TextView) holder.getView().findViewById(R.id.list_name);
+        name.setText(list.getListName());
+        holder.setChecked(list.isChecked());
+        if (list.isChecked()) {
+            name.setPaintFlags(name.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            name.setTextColor(name.getContext().getResources().getColor(R.color.tonali_gray));
+        } else {
+            name.setPaintFlags(name.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+            name.setTextColor(name.getContext().getResources().getColor(R.color.tonali_black));
+        }
     }
 
     @Override
@@ -80,5 +89,6 @@ public class ListsAdapter extends RecyclerView.Adapter<ListViewHolder> implement
     public void onMove(int start, int end) {
         Collections.swap(mLists, start, end);
         notifyItemMoved(start, end);
+        if (mListener != null) mListener.onSwap(start, end);
     }
 }

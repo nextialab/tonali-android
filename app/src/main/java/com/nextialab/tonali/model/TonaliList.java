@@ -1,9 +1,11 @@
 package com.nextialab.tonali.model;
 
 import android.content.ContentValues;
+import android.content.PeriodicSync;
 import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.nextialab.tonali.support.Persistence;
 import com.nextialab.tonali.support.Utils;
@@ -21,17 +23,17 @@ public class TonaliList implements Parcelable {
     private long mId = -1;
     private long mParent;
     private String mName;
-    private String mContent;
+    private String mContent = "";
     private ListType mType;
     private List<Long> mSequence = new ArrayList<>();
-    private ListOrder mOrder;
-    private int mPriority;
-    private boolean mChecked;
-    private Date mAlarm;
-    private boolean mNotification;
+    private ListOrder mOrder = ListOrder.CUSTOM;
+    private int mPriority = -1;
+    private boolean mChecked = false;
+    private Date mAlarm = new Date(0L);
+    private boolean mNotification = false;
     private Date mCreated;
     private Date mModified;
-    private Date mSynced;
+    private Date mSynced = new Date(0L);
 
     public TonaliList() {
 
@@ -263,9 +265,12 @@ public class TonaliList implements Parcelable {
             list.mContent = cursor.getString(cursor.getColumnIndex(ListColumns.CONTENT));
             list.mType = ListType.valueOf(cursor.getString(cursor.getColumnIndex(ListColumns.TYPE)));
             list.mOrder = ListOrder.valueOf(cursor.getString(cursor.getColumnIndex(ListColumns.ORDER)));
-            String[] sequence = cursor.getString(cursor.getColumnIndex(ListColumns.SEQUENCE)).split(",");
-            for (int i = 0; i < sequence.length; i++) {
-                list.mSequence.add(Long.parseLong(sequence[i]));
+            String order = cursor.getString(cursor.getColumnIndex(ListColumns.SEQUENCE));
+            if (order.length() > 0) {
+                String[] sequence = order.split(",");
+                for (int i = 0; i < sequence.length; i++) {
+                    list.mSequence.add(Long.parseLong(sequence[i]));
+                }
             }
             list.mPriority = cursor.getInt(cursor.getColumnIndex(ListColumns.PRIORITY));
             list.mChecked = cursor.getInt(cursor.getColumnIndex(ListColumns.CHECKED)) == 1;
@@ -274,6 +279,7 @@ public class TonaliList implements Parcelable {
             list.mCreated = new Date(cursor.getLong(cursor.getColumnIndex(ListColumns.CREATED)));
             list.mModified = new Date(cursor.getLong(cursor.getColumnIndex(ListColumns.MODIFIED)));
             list.mSynced = new Date(cursor.getLong(cursor.getColumnIndex(ListColumns.SYNCED)));
+            children.add(list);
         }
         cursor.close();
         Persistence.instance().endTransaction();
