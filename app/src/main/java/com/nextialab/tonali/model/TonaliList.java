@@ -22,11 +22,10 @@ public class TonaliList implements Parcelable {
 
     private long mId = -1;
     private long mParent;
+    private long mOwner;
     private String mName;
     private String mContent = "";
-    private ListType mType;
     private List<Long> mSequence = new ArrayList<>();
-    private ListOrder mOrder = ListOrder.CUSTOM;
     private int mPriority = -1;
     private boolean mChecked = false;
     private Date mAlarm = new Date(0L);
@@ -48,11 +47,10 @@ public class TonaliList implements Parcelable {
     protected TonaliList(Parcel in) {
         mId = in.readLong();
         mParent = in.readLong();
+        mOwner = in.readLong();
         mName = in.readString();
         mContent = in.readString();
-        mType = ListType.valueOf(in.readString());
         mSequence = in.readArrayList(Long.class.getClassLoader());
-        mOrder = ListOrder.valueOf(in.readString());
         mPriority = in.readInt();
         mChecked = in.readByte() != 0;
         mAlarm = new Date(in.readLong());
@@ -66,11 +64,10 @@ public class TonaliList implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(mId);
         dest.writeLong(mParent);
+        dest.writeLong(mOwner);
         dest.writeString(mName);
         dest.writeString(mContent);
-        dest.writeString(mType.toString());
         dest.writeList(mSequence);
-        dest.writeString(mOrder.toString());
         dest.writeInt(mPriority);
         dest.writeByte((byte) (mChecked ? 1 : 0));
         dest.writeLong(mAlarm.getTime());
@@ -113,6 +110,14 @@ public class TonaliList implements Parcelable {
         mParent = parent;
     }
 
+    public long getOwner() {
+        return mOwner;
+    }
+
+    public void setOwner(long owner) {
+        mOwner = owner;
+    }
+
     public String getListName() {
         return mName;
     }
@@ -129,28 +134,12 @@ public class TonaliList implements Parcelable {
         mContent = content;
     }
 
-    public ListType getListType() {
-        return mType;
-    }
-
-    public void setListType(ListType listType) {
-        mType = listType;
-    }
-
     public List<Long> getSequence() {
         return mSequence;
     }
 
     public void setSequence(List<Long> sequence) {
         mSequence = sequence;
-    }
-
-    public ListOrder getListOrder() {
-        return mOrder;
-    }
-
-    public void setListOrder(ListOrder listOrder) {
-        mOrder = listOrder;
     }
 
     public int getPriority() {
@@ -212,11 +201,10 @@ public class TonaliList implements Parcelable {
     public boolean save() {
         ContentValues entry = new ContentValues();
         entry.put(ListColumns.PARENT, mParent);
+        entry.put(ListColumns.OWNER, mOwner);
         entry.put(ListColumns.NAME, mName);
         entry.put(ListColumns.CONTENT, mContent);
-        entry.put(ListColumns.TYPE, mType.toString());
         entry.put(ListColumns.SEQUENCE, Utils.makeString(",", mSequence));
-        entry.put(ListColumns.ORDER, mOrder.toString());
         entry.put(ListColumns.PRIORITY, mPriority);
         entry.put(ListColumns.CHECKED, (mChecked ? 1 : 0));
         entry.put(ListColumns.ALARM, mAlarm.getTime());
@@ -261,10 +249,9 @@ public class TonaliList implements Parcelable {
             TonaliList list = new TonaliList();
             list.mId = cursor.getLong(cursor.getColumnIndex(ListColumns.ID));
             list.mParent = parent;
+            list.mOwner = cursor.getLong(cursor.getColumnIndex(ListColumns.OWNER));
             list.mName = cursor.getString(cursor.getColumnIndex(ListColumns.NAME));
             list.mContent = cursor.getString(cursor.getColumnIndex(ListColumns.CONTENT));
-            list.mType = ListType.valueOf(cursor.getString(cursor.getColumnIndex(ListColumns.TYPE)));
-            list.mOrder = ListOrder.valueOf(cursor.getString(cursor.getColumnIndex(ListColumns.ORDER)));
             String order = cursor.getString(cursor.getColumnIndex(ListColumns.SEQUENCE));
             if (order.length() > 0) {
                 String[] sequence = order.split(",");

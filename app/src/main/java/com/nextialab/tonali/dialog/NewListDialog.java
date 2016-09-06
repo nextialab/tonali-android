@@ -19,7 +19,7 @@ public class NewListDialog extends DialogFragment {
 
     public interface Listener {
 
-        void onAccept(String name, ListType type);
+        void onAccept(String name);
 
     }
 
@@ -40,7 +40,7 @@ public class NewListDialog extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (mListName.length() > 0) {
-                    if (mListener != null) mListener.onAccept(mListName.getText().toString(), ListType.LIST);
+                    if (mListener != null) mListener.onAccept(mListName.getText().toString());
                 }
             }
         });

@@ -37,12 +37,11 @@ public class ListsFragment extends Fragment implements ListsListener {
         NewListDialog dialog = new NewListDialog();
         dialog.setListener(new NewListDialog.Listener() {
             @Override
-            public void onAccept(String name, ListType type) {
+            public void onAccept(String name) {
                 TonaliList newList = new TonaliList();
                 newList.setParent(mParent.getId());
                 newList.setListName(name);
                 newList.setContent("");
-                newList.setListType(type);
                 if (newList.save()) {
                     mParent.getSequence().add(0, newList.getId());
                     if (mParent.save()) {

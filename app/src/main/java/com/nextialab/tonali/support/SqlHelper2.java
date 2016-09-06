@@ -1,13 +1,11 @@
 package com.nextialab.tonali.support;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.nextialab.tonali.model.ListColumns;
-import com.nextialab.tonali.model.ListOrder;
-import com.nextialab.tonali.model.ListType;
+import com.nextialab.tonali.model.UserColumns;
 
 /**
  * Created by Nelson on 8/13/2016.
@@ -23,7 +21,9 @@ public class SqlHelper2 extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        db.execSQL(UserColumns.getCreateQuery());
         db.execSQL(ListColumns.getCreateQuery());
+        db.insert(UserColumns.USER_TABLE, null, UserColumns.getInitialUser());
         db.insert(ListColumns.LIST_TABLE, null, ListColumns.getRootList());
     }
 
