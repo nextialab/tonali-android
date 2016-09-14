@@ -10,6 +10,8 @@ import android.widget.EditText;
 
 public class EditActivity extends AppCompatActivity {
 
+    public static final String CONTENT = "content";
+
     private EditText mEditField = null;
 
     @Override
@@ -17,9 +19,9 @@ public class EditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
         mEditField = (EditText) findViewById(R.id.edit_field);
-        /*String description = getIntent().getStringExtra(MainActivity.EDIT_FIELD);
+        String description = getIntent().getStringExtra(CONTENT);
         mEditField.setText(description);
-        mEditField.setSelection(description.length());*/
+        mEditField.setSelection(description.length());
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_edit);
         setSupportActionBar(toolbar);
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -43,7 +45,7 @@ public class EditActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_done) {
             Intent intent = new Intent();
-            //intent.putExtra(MainActivity.EDIT_FIELD, mEditField.getText().toString());
+            intent.putExtra(CONTENT, mEditField.getText().toString());
             setResult(RESULT_OK, intent);
             finish();
             return true;

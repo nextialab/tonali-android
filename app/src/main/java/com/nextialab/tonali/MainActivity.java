@@ -25,6 +25,8 @@ import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity implements ActivityListener {
 
+    private static final String TAG = MainActivity.class.getName();
+
     private Stack<ListsListener> mListsStack = new Stack<>();
 
     private FloatingActionButton mFloatingActionButton;
@@ -36,11 +38,6 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
         Toolbar toolbar = (Toolbar) findViewById(R.id.home_toolbar);
         mFloatingActionButton = (FloatingActionButton) findViewById(R.id.floating_button);
         setSupportActionBar(toolbar);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
         List<TonaliList> lists = TonaliList.findChildren(0L);
         if (lists.size() > 0) {
             TonaliList root = lists.get(0);
@@ -51,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
             mListsStack.push(fragment);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_container, fragment).commit();
         } else {
-            Log.e("MainActivity", "Root list not found");
+            Log.e(TAG, "Root list not found");
         }
     }
 

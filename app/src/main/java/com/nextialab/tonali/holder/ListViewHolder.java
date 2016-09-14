@@ -23,6 +23,7 @@ public class ListViewHolder extends RecyclerView.ViewHolder implements View.OnTo
     public interface Listener {
 
         void onClick(int which);
+        void onOpen(int which);
         void onRename(int which);
         void onDelete(int which);
         void onMark(int which, boolean state);
@@ -102,6 +103,12 @@ public class ListViewHolder extends RecyclerView.ViewHolder implements View.OnTo
         mGestureDetectorCompat = new GestureDetectorCompat(mView.getContext(), new GestureListener());
         mView.setOnTouchListener(this);
         ((CheckBox) mView.findViewById(R.id.list_checkbox)).setOnCheckedChangeListener(mOnCheckedChangeListener);
+        mView.findViewById(R.id.list_open).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mListener != null) mListener.onOpen(mPosition);
+            }
+        });
     }
 
     public void setChecked(boolean state) {

@@ -29,6 +29,7 @@ import java.util.GregorianCalendar;
 /**
  * Created by Nelson on 9/17/2015.
  */
+@Deprecated
 public class DetailsFragment extends Fragment {
 
     public static final String TASK = "task";

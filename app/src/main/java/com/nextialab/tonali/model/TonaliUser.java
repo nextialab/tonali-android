@@ -107,7 +107,7 @@ public class TonaliUser {
     public static TonaliUser getUserWithId(long id) {
         TonaliUser user = new TonaliUser();
         Persistence.instance().beginTransaction();
-        Cursor cursor = Persistence.instance().getRows(UserColumns.USER_TABLE, ListColumns.getColumns(), String.format("%s=?", UserColumns.ID), new String[]{Long.toString(id)});
+        Cursor cursor = Persistence.instance().getRows(UserColumns.USER_TABLE, UserColumns.getColumns(), String.format("%s=?", UserColumns.ID), new String[]{Long.toString(id)});
         if (cursor.getCount() > 0) {
             cursor.moveToFirst();
             user.mId = id;
@@ -125,7 +125,7 @@ public class TonaliUser {
     public static TonaliUser getUserWithCloudId(String cloudId) {
         TonaliUser user = new TonaliUser();
         Persistence.instance().beginTransaction();
-        Cursor cursor = Persistence.instance().getRows(UserColumns.USER_TABLE, ListColumns.getColumns(), String.format("%s=?", UserColumns.CLOUD_ID), new String[]{cloudId});
+        Cursor cursor = Persistence.instance().getRows(UserColumns.USER_TABLE, UserColumns.getColumns(), String.format("%s=?", UserColumns.CLOUD_ID), new String[]{cloudId});
         if (cursor.getCount() > 0) {
             cursor.moveToFirst();
             user.mId = cursor.getLong(cursor.getColumnIndex(UserColumns.ID));

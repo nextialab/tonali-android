@@ -1,6 +1,7 @@
 package com.nextialab.tonali.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.nextialab.tonali.DetailsActivity;
 import com.nextialab.tonali.R;
 import com.nextialab.tonali.adapter.ListsAdapter;
 import com.nextialab.tonali.dialog.NewListDialog;
@@ -40,6 +42,7 @@ public class ListsFragment extends Fragment implements ListsListener {
             public void onAccept(String name) {
                 TonaliList newList = new TonaliList();
                 newList.setParent(mParent.getId());
+                newList.setOwner(1L);
                 newList.setListName(name);
                 newList.setContent("");
                 if (newList.save()) {
@@ -63,6 +66,14 @@ public class ListsFragment extends Fragment implements ListsListener {
 
     @Override
     public void onClick(int which) {
+        TonaliList list = mAdapter.getItemAtPosition(which);
+        Intent intent = new Intent(getActivity(), DetailsActivity.class);
+        intent.putExtra(DetailsActivity.LIST, list);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onOpen(int which) {
         if (mListener != null) {
             TonaliList list = mAdapter.getItemAtPosition(which);
             mListener.goToList(list);
@@ -113,11 +124,16 @@ public class ListsFragment extends Fragment implements ListsListener {
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(recycler);
         mParent = getArguments().getParcelable(PARENT);
+        setHasOptionsMenu(true);
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         if (mParent != null) {
             loadLists();
         }
-        setHasOptionsMenu(true);
-        return view;
     }
 
     private void loadLists() {

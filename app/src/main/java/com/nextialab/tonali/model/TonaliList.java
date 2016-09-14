@@ -211,13 +211,16 @@ public class TonaliList implements Parcelable {
         entry.put(ListColumns.NOTIFICATION, (mNotification ? 1 : 0));
         entry.put(ListColumns.SYNCED, mSynced.getTime());
         Persistence.instance().beginTransaction();
+        Date now = new Date();
         if (mId > 0) {
-            entry.put(ListColumns.MODIFIED, (new Date()).getTime());
+            mModified = now;
+            entry.put(ListColumns.MODIFIED, now.getTime());
             boolean result = Persistence.instance().update(ListColumns.LIST_TABLE, entry, String.format("%s=?", ListColumns.ID), new String[]{Long.toString(mId)});
             Persistence.instance().endTransaction();
             return result;
         } else {
-            Date now = new Date();
+            mCreated = now;
+            mModified = now;
             entry.put(ListColumns.CREATED, now.getTime());
             entry.put(ListColumns.MODIFIED, now.getTime());
             long id = Persistence.instance().insert(ListColumns.LIST_TABLE, entry);
