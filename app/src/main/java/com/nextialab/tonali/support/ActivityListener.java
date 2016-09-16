@@ -9,6 +9,5 @@ import com.nextialab.tonali.model.Task;
 public interface ActivityListener {
 
     void goToList(TonaliList list);
-    void goToFinal(TonaliList list);
 
 }

@@ -46,12 +46,6 @@ public class ListsAdapter extends RecyclerView.Adapter<ListViewHolder> implement
         notifyItemInserted(position);
     }
 
-    public void removeList(TonaliList list) {
-        int position = mLists.indexOf(list);
-        mLists.remove(position);
-        notifyItemRemoved(position);
-    }
-
     public TonaliList getItemAtPosition(int position) {
         return mLists.get(position);
     }

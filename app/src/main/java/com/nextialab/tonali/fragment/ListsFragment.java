@@ -81,16 +81,6 @@ public class ListsFragment extends Fragment implements ListsListener {
     }
 
     @Override
-    public void onRename(int which) {
-
-    }
-
-    @Override
-    public void onDelete(int which) {
-
-    }
-
-    @Override
     public void onMark(int which, boolean state) {
         TonaliList list = mAdapter.getItemAtPosition(which);
         list.setIsChecked(state);

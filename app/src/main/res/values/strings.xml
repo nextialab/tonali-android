@@ -12,10 +12,14 @@
     <string name="about_tasks_single_press">Press to show task details</string>
     <string name="action_done">Done</string>
     <string name="action_settings">Settings</string>
+    <string name="app_accept">Accept</string>
     <string name="app_clear">Clear</string>
     <string name="app_name">Tonali</string>
     <string name="button_got_it">Got it!</string>
     <string name="description_placeholder">Description (press here)</string>
+    <string name="drawer_close">Drawer close</string>
+    <string name="drawer_open">Drawer open</string>
+    <string name="edit_list_name">Rename</string>
     <string name="hello_world">Hello world!</string>
     <string name="list_delete">Delete</string>
     <string name="list_rename">Rename</string>

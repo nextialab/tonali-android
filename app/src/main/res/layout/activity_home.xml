@@ -1,9 +1,13 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.nextialab.tonali.MainActivity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/drawer_layout">
+
+<RelativeLayout android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:context="com.nextialab.tonali.MainActivity"
                 android:background="@color/tonali_gray">
 
     <android.support.v7.widget.Toolbar
@@ -43,3 +47,12 @@
     </android.support.design.widget.FloatingActionButton>
 
 </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start">
+
+        <include
+            layout="@layout/drawer_layout" />
+    </RelativeLayout>
+</android.support.v4.widget.DrawerLayout>

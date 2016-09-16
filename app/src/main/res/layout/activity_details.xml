@@ -50,7 +50,8 @@
                 android:textColor="@color/tonali_black"
                 android:textSize="20sp"
                 android:layout_marginBottom="20dp"
-                android:onClick="onRename" />
+                android:onClick="onRename"
+                android:clickable="true" />
 
             <TextView
                 android:layout_width="match_parent"

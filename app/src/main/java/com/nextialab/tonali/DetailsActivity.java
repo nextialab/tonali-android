@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.nextialab.tonali.dialog.EditListDialog;
 import com.nextialab.tonali.model.TonaliList;
 
 public class DetailsActivity extends AppCompatActivity {
@@ -37,11 +38,27 @@ public class DetailsActivity extends AppCompatActivity {
         if (content.length() > 0) {
             mListContent.setText(content);
             mListContent.setTextColor(getResources().getColor(R.color.tonali_black));
+        } else {
+            mListContent.setText(R.string.description_placeholder);
+            mListContent.setTextColor(getResources().getColor(R.color.tonali_gray));
         }
     }
 
     public void onRename(View view) {
-
+        EditListDialog dialog = new EditListDialog();
+        dialog.setCurrentName(mList.getListName());
+        dialog.setListener(new EditListDialog.Listener() {
+            @Override
+            public void onAccept(String name) {
+                mList.setListName(name);
+                if (mList.save()) {
+                    ((TextView) findViewById(R.id.list_name)).setText(mList.getListName());
+                } else {
+                    Log.e(TAG, "Could not save new list name");
+                }
+            }
+        });
+        dialog.show(getSupportFragmentManager(), null);
     }
 
     public void onEditContent(View view) {

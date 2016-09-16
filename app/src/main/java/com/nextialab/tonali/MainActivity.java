@@ -1,22 +1,18 @@
 package com.nextialab.tonali;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.nextialab.tonali.fragment.DetailsFragment;
 import com.nextialab.tonali.fragment.ListsFragment;
-import com.nextialab.tonali.fragment.TasksFragment;
 import com.nextialab.tonali.model.TonaliList;
-import com.nextialab.tonali.model.Task;
 import com.nextialab.tonali.support.ActivityListener;
 import com.nextialab.tonali.support.ListsListener;
 
@@ -27,16 +23,19 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
 
     private static final String TAG = MainActivity.class.getName();
 
-    private Stack<ListsListener> mListsStack = new Stack<>();
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
 
-    private FloatingActionButton mFloatingActionButton;
+    private Stack<ListsListener> mListsStack = new Stack<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.home_toolbar);
-        mFloatingActionButton = (FloatingActionButton) findViewById(R.id.floating_button);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
         setSupportActionBar(toolbar);
         List<TonaliList> lists = TonaliList.findChildren(0L);
         if (lists.size() > 0) {
@@ -53,32 +52,34 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home, menu);
-        return true;
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_about) {
-            startActivity(new Intent(this, AboutActivity.class));
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
     public void onBackPressed() {
         if (mListsStack.size() > 0) {
             mListsStack.pop();
+        }
+        if (mListsStack.size() == 1) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            mDrawerToggle.setDrawerIndicatorEnabled(true);
         }
         super.onBackPressed();
     }
@@ -91,6 +92,8 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
 
     @Override
     public void goToList(TonaliList list) {
+        mDrawerToggle.setDrawerIndicatorEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Bundle args = new Bundle();
         args.putParcelable(ListsFragment.PARENT, list);
         ListsFragment fragment = new ListsFragment();
@@ -101,11 +104,7 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
         transaction.replace(R.id.main_container, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
-    }
-
-    @Override
-    public void goToFinal(TonaliList list) {
-
+        getSupportActionBar().setDisplayUseLogoEnabled(false);
     }
 
 }
