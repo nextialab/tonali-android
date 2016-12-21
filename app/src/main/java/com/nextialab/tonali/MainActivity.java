@@ -1,5 +1,7 @@
 package com.nextialab.tonali;
 
+import android.app.ProgressDialog;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -15,6 +17,7 @@ import com.nextialab.tonali.fragment.ListsFragment;
 import com.nextialab.tonali.model.TonaliList;
 import com.nextialab.tonali.support.ActivityListener;
 import com.nextialab.tonali.support.ListsListener;
+import com.nextialab.tonali.support.UpdateHelper;
 
 import java.util.List;
 import java.util.Stack;
@@ -22,9 +25,12 @@ import java.util.Stack;
 public class MainActivity extends AppCompatActivity implements ActivityListener {
 
     private static final String TAG = MainActivity.class.getName();
+    private static final String PREFERENCES = MainActivity.class.getName();
+    private static final String UPGRADED = MainActivity.class.getName() + "upgraded";
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
+    private ProgressDialog mProgressDialog;
 
     private Stack<ListsListener> mListsStack = new Stack<>();
 
@@ -48,6 +54,24 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
             getSupportFragmentManager().beginTransaction().replace(R.id.main_container, fragment).commit();
         } else {
             Log.e(TAG, "Root list not found");
+        }
+        SharedPreferences prefs = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        if (!prefs.getBoolean(UPGRADED, false)) {
+            mProgressDialog = ProgressDialog.show(this, "", "Upgrading...", true);
+            UpdateHelper helper = new UpdateHelper(this);
+            helper.setListener(new UpdateHelper.Listener() {
+                @Override
+                public void onPostExecute() {
+                    SharedPreferences.Editor editor = getSharedPreferences(PREFERENCES, MODE_PRIVATE).edit();
+                    editor.putBoolean(UPGRADED, true);
+                    editor.apply();
+                    if (mListsStack.size() > 0) {
+                        mListsStack.peek().reloadList();
+                    }
+                    if (mProgressDialog != null && mProgressDialog.isShowing()) mProgressDialog.dismiss();
+                }
+            });
+            helper.execute();
         }
     }
 

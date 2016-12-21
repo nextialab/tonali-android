@@ -8,5 +8,6 @@ import com.nextialab.tonali.adapter.ListsAdapter;
 public interface ListsListener extends ListsAdapter.Listener {
 
     void onNewList();
+    void reloadList();
 
 }

@@ -119,6 +119,16 @@ public class Task implements Comparable<Task>, Parcelable {
         mCreated = created;
     }
 
+    public TonaliList toList(long parent) {
+        TonaliList list = new TonaliList();
+        list.setParent(parent);
+        list.setListName(mTask);
+        list.setContent(mDescription);
+        list.setIsChecked(mDone);
+        list.setCreated(mCreated);
+        return null;
+    }
+
     @Override
     public int compareTo(Task another) {
         if (mDone == another.isDone()) {

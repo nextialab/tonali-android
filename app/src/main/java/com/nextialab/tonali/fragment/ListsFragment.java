@@ -57,6 +57,11 @@ public class ListsFragment extends Fragment implements ListsListener {
     }
 
     @Override
+    public void reloadList() {
+        loadLists();
+    }
+
+    @Override
     public void onSwap(int from, int to) {
         Collections.swap(mParent.getSequence(), from, to);
         if (mParent.save()) {
@@ -126,7 +131,7 @@ public class ListsFragment extends Fragment implements ListsListener {
         }
     }
 
-    private void loadLists() {
+    public void loadLists() {
         List<TonaliList> children = TonaliList.findChildren(mParent.getId());
         List<Long> sequence = mParent.getSequence();
         List<TonaliList> ordered = new ArrayList<>(children.size());

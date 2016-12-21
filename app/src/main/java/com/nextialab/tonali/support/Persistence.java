@@ -189,11 +189,11 @@ public class Persistence {
     }
 
     @Deprecated
-    public ArrayList<Task> getTasksForList(int list) {
+    public ArrayList<Task> getTasksForList(long list) {
         ArrayList<Task> tasks = new ArrayList<>();
         SQLiteDatabase db = new SqlHelper(mContext).getReadableDatabase();
         String[] columns = {"id", "task", "description", "done", "alarm", "notification", "created"};
-        String[] args = new String[]{Integer.toString(list)};
+        String[] args = new String[]{Long.toString(list)};
         Cursor cursor = db.query(SqlHelper.TASKS_TABLE,
                 columns,
                 "list=? AND cleared=0",
@@ -205,7 +205,7 @@ public class Persistence {
             Task task = new Task();
             task.setId(cursor.getInt(cursor.getColumnIndex("id")));
             task.setTask(cursor.getString(cursor.getColumnIndex("task")));
-            task.setListId(list);
+            task.setListId((int)list);
             task.setDescription(cursor.getString(cursor.getColumnIndex("description")));
             int done = cursor.getInt(cursor.getColumnIndex("done"));
             task.setDone(done > 0);
