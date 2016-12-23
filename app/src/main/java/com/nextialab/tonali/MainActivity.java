@@ -1,12 +1,14 @@
 package com.nextialab.tonali;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -17,10 +19,14 @@ import com.nextialab.tonali.fragment.ListsFragment;
 import com.nextialab.tonali.model.TonaliList;
 import com.nextialab.tonali.support.ActivityListener;
 import com.nextialab.tonali.support.ListsListener;
+import com.nextialab.tonali.support.MigrationTester;
+import com.nextialab.tonali.support.Persistence;
 import com.nextialab.tonali.support.UpdateHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.concurrent.RunnableFuture;
 
 public class MainActivity extends AppCompatActivity implements ActivityListener {
 
@@ -47,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
         if (lists.size() > 0) {
             TonaliList root = lists.get(0);
             Bundle args = new Bundle();
-            args.putParcelable(ListsFragment.PARENT, root);
+            args.putLong(ListsFragment.PARENT, root.getId());
             ListsFragment fragment = new ListsFragment();
             fragment.setArguments(args);
             mListsStack.push(fragment);
@@ -55,24 +61,56 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
         } else {
             Log.e(TAG, "Root list not found");
         }
+        checkIfUpgrade();
+    }
+
+    private void checkIfUpgrade() {
         SharedPreferences prefs = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
         if (!prefs.getBoolean(UPGRADED, false)) {
-            mProgressDialog = ProgressDialog.show(this, "", "Upgrading...", true);
-            UpdateHelper helper = new UpdateHelper(this);
-            helper.setListener(new UpdateHelper.Listener() {
-                @Override
-                public void onPostExecute() {
-                    SharedPreferences.Editor editor = getSharedPreferences(PREFERENCES, MODE_PRIVATE).edit();
-                    editor.putBoolean(UPGRADED, true);
-                    editor.apply();
-                    if (mListsStack.size() > 0) {
-                        mListsStack.peek().reloadList();
+            ArrayList<TonaliList> prevLists = Persistence.instance().getLists();
+            if (prevLists.size() > 0) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("New version");
+                builder.setMessage("Should upgrade previous data to the new version?");
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
                     }
-                    if (mProgressDialog != null && mProgressDialog.isShowing()) mProgressDialog.dismiss();
-                }
-            });
-            helper.execute();
+                });
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        upgradeLists();
+                    }
+                });
+                builder.show();
+            } else {
+                // We just set the flag UPGRADED to true
+                SharedPreferences.Editor editor = getSharedPreferences(PREFERENCES, MODE_PRIVATE).edit();
+                editor.putBoolean(UPGRADED, true);
+                editor.apply();
+            }
         }
+    }
+
+    private void upgradeLists() {
+        mProgressDialog = ProgressDialog.show(this, "", "Upgrading...", true);
+        UpdateHelper helper = new UpdateHelper(this);
+        helper.setListener(new UpdateHelper.Listener() {
+            @Override
+            public void onPostExecute() {
+                SharedPreferences.Editor editor = getSharedPreferences(PREFERENCES, MODE_PRIVATE).edit();
+                editor.putBoolean(UPGRADED, true);
+                editor.apply();
+                if (mListsStack.size() > 0) {
+                    mListsStack.peek().reloadList();
+                }
+                Log.i(TAG, "Updated");
+                if (mProgressDialog != null && mProgressDialog.isShowing()) mProgressDialog.dismiss();
+            }
+        });
+        helper.execute();
     }
 
     @Override
@@ -119,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
         mDrawerToggle.setDrawerIndicatorEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Bundle args = new Bundle();
-        args.putParcelable(ListsFragment.PARENT, list);
+        args.putLong(ListsFragment.PARENT, list.getId());
         ListsFragment fragment = new ListsFragment();
         fragment.setArguments(args);
         mListsStack.push(fragment);

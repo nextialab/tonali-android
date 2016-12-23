@@ -126,7 +126,7 @@ public class Task implements Comparable<Task>, Parcelable {
         list.setContent(mDescription);
         list.setIsChecked(mDone);
         list.setCreated(mCreated);
-        return null;
+        return list;
     }
 
     @Override

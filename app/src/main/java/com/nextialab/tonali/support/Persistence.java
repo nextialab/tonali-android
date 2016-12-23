@@ -76,6 +76,23 @@ public class Persistence {
     }
 
     @Deprecated
+    public ArrayList<TonaliList> getLists() {
+        ArrayList<TonaliList> lists = new ArrayList<>();
+        SQLiteDatabase db = new SqlHelper(mContext).getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM lists", null);
+        while (cursor.moveToNext()) {
+            int id = cursor.getInt(cursor.getColumnIndex("id"));
+            String listName = cursor.getString(cursor.getColumnIndex("list"));
+            TonaliList list = new TonaliList(listName, id);
+            list.setIsChecked(cursor.getInt(cursor.getColumnIndex("cleared")) == 1);
+            lists.add(list);
+        }
+        cursor.close();
+        db.close();
+        return lists;
+    }
+
+    @Deprecated
     public ArrayList<TonaliList> getListsWithCount() {
         ArrayList<TonaliList> lists = new ArrayList<>();
         SQLiteDatabase db = new SqlHelper(mContext).getReadableDatabase();

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -32,6 +33,8 @@ import java.util.List;
  */
 public class ListsFragment extends Fragment implements ListsListener {
 
+    private static final String TAG = ListFragment.class.getName();
+
     public static final String PARENT = "parent";
 
     @Override
@@ -58,6 +61,7 @@ public class ListsFragment extends Fragment implements ListsListener {
 
     @Override
     public void reloadList() {
+        mParent = TonaliList.find(mParentId);
         loadLists();
     }
 
@@ -97,6 +101,7 @@ public class ListsFragment extends Fragment implements ListsListener {
     private ActivityListener mListener;
     private ListsAdapter mAdapter = new ListsAdapter();
     private TonaliList mParent;
+    private long mParentId;
 
     @Override
     public void onAttach(Context context) {
@@ -118,7 +123,7 @@ public class ListsFragment extends Fragment implements ListsListener {
         callback.setListener(mAdapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(recycler);
-        mParent = getArguments().getParcelable(PARENT);
+        mParentId = getArguments().getLong(PARENT);
         setHasOptionsMenu(true);
         return view;
     }
@@ -126,12 +131,12 @@ public class ListsFragment extends Fragment implements ListsListener {
     @Override
     public void onResume() {
         super.onResume();
-        if (mParent != null) {
-            loadLists();
-        }
+        mParent = TonaliList.find(mParentId);
+        loadLists();
     }
 
     public void loadLists() {
+        Log.i(TAG, String.format("Loading lists for list %d", mParent.getId()));
         List<TonaliList> children = TonaliList.findChildren(mParent.getId());
         List<Long> sequence = mParent.getSequence();
         List<TonaliList> ordered = new ArrayList<>(children.size());

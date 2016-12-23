@@ -244,6 +244,40 @@ public class TonaliList implements Parcelable {
         return result;
     }
 
+    public static TonaliList find(long id) {
+        List<TonaliList> lists = new ArrayList<>();
+        Persistence.instance().beginTransaction();
+        Cursor cursor = Persistence.instance().getRows(ListColumns.LIST_TABLE, ListColumns.getColumns(), String.format("%s=?", ListColumns.ID), new String[]{Long.toString(id)});
+        while (cursor.moveToNext()) {
+            TonaliList list = new TonaliList();
+            list.mId = cursor.getLong(cursor.getColumnIndex(ListColumns.ID));
+            list.mParent = cursor.getLong(cursor.getColumnIndex(ListColumns.PARENT));
+            list.mOwner = cursor.getLong(cursor.getColumnIndex(ListColumns.OWNER));
+            list.mName = cursor.getString(cursor.getColumnIndex(ListColumns.NAME));
+            list.mContent = cursor.getString(cursor.getColumnIndex(ListColumns.CONTENT));
+            String order = cursor.getString(cursor.getColumnIndex(ListColumns.SEQUENCE));
+            if (order.length() > 0) {
+                String[] sequence = order.split(",");
+                for (int i = 0; i < sequence.length; i++) {
+                    list.mSequence.add(Long.parseLong(sequence[i]));
+                }
+            }
+            list.mPriority = cursor.getInt(cursor.getColumnIndex(ListColumns.PRIORITY));
+            list.mChecked = cursor.getInt(cursor.getColumnIndex(ListColumns.CHECKED)) == 1;
+            list.mAlarm = new Date(cursor.getLong(cursor.getColumnIndex(ListColumns.ALARM)));
+            list.mNotification = cursor.getInt(cursor.getColumnIndex(ListColumns.NOTIFICATION)) == 1;
+            list.mCreated = new Date(cursor.getLong(cursor.getColumnIndex(ListColumns.CREATED)));
+            list.mModified = new Date(cursor.getLong(cursor.getColumnIndex(ListColumns.MODIFIED)));
+            list.mSynced = new Date(cursor.getLong(cursor.getColumnIndex(ListColumns.SYNCED)));
+            lists.add(list);
+        }
+        Persistence.instance().endTransaction();
+        if (lists.size() > 0) {
+            return lists.get(0);
+        }
+        return null;
+    }
+
     public static List<TonaliList> findChildren(long parent) {
         List<TonaliList> children = new ArrayList<>();
         Persistence.instance().beginTransaction();
