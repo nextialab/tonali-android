@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.nextialab.tonali">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> -->
 
     <application
         android:name=".TonaliApp"
@@ -15,19 +15,19 @@
             android:name="io.fabric.ApiKey"
             android:value="810f485fc70b9ec7fe6791806fbc3f2b62f8545e" />
 
-        <receiver
+        <!-- <receiver
             android:name=".AlarmReceiver"
             android:exported="false"
             android:process=":remote">
             <intent-filter>
                 <action android:name="com.nextialab.tonali.AlarmReceiver" />
             </intent-filter>
-        </receiver>
-        <receiver android:name=".BootReceiver">
+        </receiver> -->
+        <!-- <receiver android:name=".BootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
-        </receiver>
+        </receiver> -->
 
         <activity
             android:name=".MainActivity"
@@ -44,13 +44,15 @@
             android:name=".AboutActivity"
             android:configChanges="orientation"
             android:label="@string/title_activity_about"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".EditActivity"
             android:configChanges="orientation"
             android:label="@string/title_activity_edit"
-            android:screenOrientation="portrait"></activity>
-        <activity android:name=".DetailsActivity"></activity>
+            android:screenOrientation="portrait" />
+        <activity android:name=".DetailsActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

@@ -3,6 +3,7 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.nextialab.tonali.MainActivity">
 
-      <item android:id="@+id/action_about" android:title="@string/title_activity_about"
-          android:orderInCategory="100" app:showAsAction="never" />
+      <item android:id="@+id/action_add" android:title="@string/action_add"
+          android:icon="@mipmap/ic_add_white_24dp"
+          android:orderInCategory="100" app:showAsAction="always" />
 </menu>
