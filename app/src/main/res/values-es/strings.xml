@@ -41,7 +41,6 @@
     <string name="app_accept">Aceptar</string>
     <string name="app_no">No</string>
     <string name="app_yes">Si</string>
-    <string name="drawer_close"></string>
     <string name="edit_list_name">Renombrar</string>
     <string name="menu_about">Acerca de</string>
     <string name="new_version_message">Migrar datos de la versión anterior?</string>
