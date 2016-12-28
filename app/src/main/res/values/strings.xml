@@ -16,10 +16,13 @@
     <string name="app_accept">Accept</string>
     <string name="app_clear">Clear</string>
     <string name="app_name">Tonali</string>
+    <string name="app_no">No</string>
+    <string name="app_version" translatable="false">Version 1.3</string>
+    <string name="app_yes">Yes</string>
     <string name="button_got_it">Got it!</string>
     <string name="description_placeholder">Description (press here)</string>
-    <string name="drawer_close">Drawer close</string>
-    <string name="drawer_open">Drawer open</string>
+    <string name="drawer_close" translatable="false">Drawer close</string>
+    <string name="drawer_open" translatable="false">Drawer open</string>
     <string name="edit_list_name">Rename</string>
     <string name="hello_world">Hello world!</string>
     <string name="list_delete">Delete</string>
@@ -31,6 +34,10 @@
     <string name="lists_new_list_title">New list</string>
     <string name="lists_update_list">Update</string>
     <string name="lists_update_list_title">Update list</string>
+    <string name="menu_about">About</string>
+    <string name="new_version_message">Should upgrade previous data to the new version?</string>
+    <string name="new_version_migrating">Migrating...</string>
+    <string name="new_version_title">New version!</string>
     <string name="notification_removed">Alarm removed</string>
     <string name="notification_set">Alarm set to</string>
     <string name="title_activity_home">Tonali</string>

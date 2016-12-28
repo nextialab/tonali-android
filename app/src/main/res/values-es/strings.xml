@@ -37,4 +37,14 @@
     <string name="about_list_single_press">Presiona para mostrar las tareas en la lista</string>
     <string name="about_tasks_single_press">Presiona para mostrar detalles de la tarea</string>
     <string name="button_got_it">Enterado!</string>
+    <string name="action_add">Agregar</string>
+    <string name="app_accept">Aceptar</string>
+    <string name="app_no">No</string>
+    <string name="app_yes">Si</string>
+    <string name="drawer_close"></string>
+    <string name="edit_list_name">Renombrar</string>
+    <string name="menu_about">Acerca de</string>
+    <string name="new_version_message">Migrar datos de la versión anterior?</string>
+    <string name="new_version_migrating">Migrando...</string>
+    <string name="new_version_title">Versión nueva!</string>
 </resources>

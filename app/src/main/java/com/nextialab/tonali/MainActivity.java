@@ -2,6 +2,7 @@ package com.nextialab.tonali;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -71,15 +72,17 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
             ArrayList<TonaliList> prevLists = Persistence.instance().getLists();
             if (prevLists.size() > 0) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("New version");
-                builder.setMessage("Should upgrade previous data to the new version?");
-                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                builder.setTitle(R.string.new_version_title);
+                builder.setMessage(R.string.new_version_message);
+                builder.setNegativeButton(R.string.app_no, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
+                        SharedPreferences.Editor editor = getSharedPreferences(PREFERENCES, MODE_PRIVATE).edit();
+                        editor.putBoolean(UPGRADED, true);
+                        editor.apply();
                     }
                 });
-                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                builder.setPositiveButton(R.string.app_yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         upgradeLists();
@@ -96,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
     }
 
     private void upgradeLists() {
-        mProgressDialog = ProgressDialog.show(this, "", "Upgrading...", true);
+        mProgressDialog = ProgressDialog.show(this, "", getString(R.string.new_version_migrating), true);
         UpdateHelper helper = new UpdateHelper(this);
         helper.setListener(new UpdateHelper.Listener() {
             @Override
@@ -179,6 +182,11 @@ public class MainActivity extends AppCompatActivity implements ActivityListener 
         transaction.addToBackStack(null);
         transaction.commit();
         getSupportActionBar().setDisplayUseLogoEnabled(false);
+    }
+
+    public void onAbout(View view) {
+        mDrawerLayout.closeDrawers();
+        startActivity(new Intent(this, AboutActivity.class));
     }
 
 }
