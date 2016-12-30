@@ -86,15 +86,15 @@ public class DetailsActivity extends AppCompatActivity {
 
     public void onDelete(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Are you sure?");
-        builder.setNegativeButton("Delete", new DialogInterface.OnClickListener() {
+        builder.setMessage(R.string.list_delete_message);
+        builder.setNegativeButton(R.string.list_delete, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mList.delete();
                 finish();
             }
         });
-        builder.setPositiveButton("Cancel", null);
+        builder.setPositiveButton(R.string.list_delete_cancel, null);
         builder.show();
     }
 

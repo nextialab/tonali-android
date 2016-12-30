@@ -46,4 +46,6 @@
     <string name="new_version_message">Migrar datos de la versión anterior?</string>
     <string name="new_version_migrating">Migrando...</string>
     <string name="new_version_title">Versión nueva!</string>
+    <string name="list_delete_cancel">Cancelar</string>
+    <string name="list_delete_message">Estás seguro?</string>
 </resources>
